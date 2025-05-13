@@ -1,0 +1,41 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Struktur Proyek TBB App
+
+Proyek ini adalah aplikasi Laravel dengan React yang menggunakan Inertia.js. Berikut adalah struktur utama proyek:
+
+## Backend (Laravel)
+- `app/` - Berisi logika utama aplikasi
+  - `Http/Controllers/` - Controller Laravel
+  - `Models/` - Model Eloquent
+  - `Services/` - Layanan bisnis
+- `config/` - File konfigurasi Laravel
+- `database/` - Migrasi dan seeder database
+- `routes/` - Definisi rute aplikasi
+
+## Frontend (React + TypeScript)
+- `resources/` - Aset frontend
+  - `js/` - Komponen React dan logika frontend
+  - `css/` - File CSS dan Tailwind
+- `tbb-mobile/` - Aplikasi mobile
+
+## Konfigurasi
+- `composer.json` - Dependensi PHP
+- `package.json` - Dependensi Node.js
+- `vite.config.ts` - Konfigurasi Vite
+- `tailwind.config.js` - Konfigurasi Tailwind CSS
+
+## Pengembangan
+Untuk menjalankan proyek dalam mode development:
+```bash
+composer run dev
+```
+
+Ini akan menjalankan:
+- Server Laravel
+- Queue worker
+- Vite dev server
+

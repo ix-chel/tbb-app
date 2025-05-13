@@ -1,0 +1,45 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Standar Pengkodean TBB App
+
+## PHP (Laravel)
+- Menggunakan PHP 8.2 atau lebih tinggi
+- Mengikuti PSR-12 coding standards
+- Menggunakan type hints dan return types
+- Menggunakan Laravel Pint untuk formatting
+
+## TypeScript/React
+- Menggunakan TypeScript untuk type safety
+- Menggunakan ESLint dan Prettier untuk formatting
+- Menggunakan functional components dengan hooks
+- Menggunakan Radix UI untuk komponen dasar
+- Menggunakan Tailwind CSS untuk styling
+
+## Struktur Komponen
+```typescript
+// Contoh struktur komponen React
+import { type FC } from 'react'
+import { type Props } from './types'
+
+export const Component: FC<Props> = ({ prop1, prop2 }) => {
+  // Logic here
+  return (
+    // JSX here
+  )
+}
+```
+
+## Penamaan
+- PascalCase untuk komponen React
+- camelCase untuk fungsi dan variabel
+- snake_case untuk nama file PHP
+- PascalCase untuk nama class PHP
+
+## Testing
+- Unit tests menggunakan PHPUnit
+- Feature tests untuk endpoint API
+- Component tests untuk React components
+
