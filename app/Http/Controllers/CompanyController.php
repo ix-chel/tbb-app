@@ -23,9 +23,9 @@ class CompanyController extends Controller
     public function __construct()
     {
         $this->middleware('permission:view companies')->only(['index', 'show']);
-        $this->middleware('permission:create companies')->only(['create', 'store']);
-        $this->middleware('permission:edit companies')->only(['edit', 'update']);
-        $this->middleware('permission:delete companies')->only('destroy');
+        $this->middleware('permission:create company')->only(['create', 'store']);
+        $this->middleware('permission:update company')->only(['edit', 'update']);
+        $this->middleware('permission:delete company')->only('destroy');
     }
 
     /**
@@ -48,7 +48,7 @@ class CompanyController extends Controller
             });
         }
 
-        $companies = $query->paginate(10)->withQueryString();
+        $companies = $query->paginate(12)->withQueryString();
 
         $admins = User::role(['super-admin', 'admin'])->orderBy('name')->get(['id', 'name']);
 

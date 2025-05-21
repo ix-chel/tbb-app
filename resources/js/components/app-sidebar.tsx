@@ -3,47 +3,19 @@ import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
-import { Link, router } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Store, Wrench, MessageSquare, Building2, Package } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import { BookOpen, Folder, LayoutGrid, Store, Wrench, MessageSquare, Building2, Package, PersonStanding, QrCode } from 'lucide-react';
+import { useMemo } from 'react';
 import AppLogo from './app-logo';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: route('dashboard'),
-        icon: LayoutGrid,
-        roles: ['super-admin', 'Admin'],
-    },
-    {
-        title: 'Perusahaan',
-        href: route('companies.index'),
-        icon: Building2,
-        roles: ['super-admin', 'Admin'],
-    },
-    {
-        title: 'Toko',
-        href: route('stores.index'),
-        icon: Store,
-        roles: ['super-admin', 'Admin'],
-    },
-    {
-        title: 'Jadwal Maintenance',
-        href: route('schedules.index'),
-        icon: Wrench,
-        roles: ['super-admin', 'Admin', 'technician'],
-    },
-    {
-        title  :'Inventory',
-        href: route('inventory.index'),
-        icon: Package,
-        roles: ['super-admin', 'Admin', 'technician'],
-    },
-    {
-        title: 'Feedback',
-        href: route('feedback.index'),
-        icon: MessageSquare,
-    },
-];
+const iconMap: Record<string, any> = {
+    'home': LayoutGrid,
+    'office-building': Building2,
+    'store': Store,
+    'cube': Package,
+    'wrench-screwdriver': Wrench,
+    'chat-bubble-left-right': MessageSquare,
+};
 
 const footerNavItems: NavItem[] = [
     {
@@ -58,11 +30,64 @@ const footerNavItems: NavItem[] = [
     },
 ];
 
+const mainNavItems: NavItem[] = [
+    {
+        title: 'Dashboard',
+        href: '/dashboard',
+        icon: LayoutGrid,
+    },
+    {
+        title: 'Companies',
+        href: '/companies',
+        icon: Building2,
+    },
+    {
+        title: 'Stores',
+        href: '/stores',
+        icon: Store,
+    },
+    {
+        title: 'Inventory',
+        href: '/inventory',
+        icon: Package,
+    },
+    {
+        title: 'QR Code',
+        href: '/filter-qr',
+        icon: QrCode,
+    },
+    {
+        title: 'Maintenance Schedule',
+        href: '/schedules',
+        icon: Wrench,
+    },
+    {
+        title: 'Feedback',
+        href: '/feedback',
+        icon: MessageSquare,
+    },
+    {
+        title: 'Users',
+        href: '/users',
+        icon: PersonStanding,
+    },
+];
+
 interface AppSidebarProps {
     user?: any;
 }
 
 export function AppSidebar({ user }: AppSidebarProps) {
+    const { props } = usePage();
+    const currentPath = (props?.url as string) || '/';
+    
+    // Update current state for menu items
+    const navItems = useMemo(() => {
+        return mainNavItems.map(item => ({
+            ...item,
+            current: currentPath.startsWith(item.href)
+        }));
+    }, [currentPath]);
     
     return (
         <Sidebar collapsible="icon" variant="inset">
@@ -73,14 +98,13 @@ export function AppSidebar({ user }: AppSidebarProps) {
                             <Link href={route('dashboard')} prefetch>
                                 <AppLogo />
                             </Link>
-
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain items={navItems} />
             </SidebarContent>
 
             <SidebarFooter>

@@ -45,7 +45,7 @@ class InventoryItemPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasRole(['super-admin', 'admin']);
+        return $user->hasRole(['super-admin', 'admin', 'technician']);
     }
 
     /**
@@ -54,7 +54,7 @@ class InventoryItemPolicy
      */
     public function update(User $user, InventoryItem $inventoryItem): bool
     {
-        return $user->hasRole(['super-admin', 'admin']);
+        return $user->hasRole(['super-admin', 'admin', 'technician']);
     }
 
     /**

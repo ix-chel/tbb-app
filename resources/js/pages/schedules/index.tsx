@@ -153,8 +153,8 @@ export default function Index({ auth, schedules, filters, stores, technicians, s
                         <p className="text-gray-500 dark:text-gray-400 mt-1">Kelola jadwal perawatan dan pemeliharaan</p>
                     </div>
                     <Link
-                        href={route('schedules.create')} // Pastikan rute ini ada
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 dark:focus:ring-offset-gray-900"
+                        href={route('schedules.create')}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition duration-150"
                     >
                         <Plus className="w-5 h-5" />
                         <span>Tambah Jadwal</span>
@@ -165,7 +165,7 @@ export default function Index({ auth, schedules, filters, stores, technicians, s
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
                             <input
                                 type="text"
                                 placeholder="Cari berdasarkan nama toko, catatan..."

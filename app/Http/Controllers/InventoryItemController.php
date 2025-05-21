@@ -44,7 +44,7 @@ class InventoryItemController extends Controller
 
         $inventoryItems = $query->with('lastUpdater:id,name') // Eager load lastUpdater jika perlu
                                 ->orderBy('name') // Contoh sorting default
-                                ->paginate(10)
+                                ->paginate(12)
                                 ->withQueryString(); // Untuk menjaga parameter filter di URL pagination
 
         // Ambil filter yang aktif untuk dikirim kembali ke frontend
@@ -68,25 +68,24 @@ class InventoryItemController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        // $this->authorize('create', InventoryItem::class); // Jika ada policy untuk create
-
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'type' => 'required|string|in:filter,mesin,alat,sparepart',
             'sku' => 'required|string|max:255|unique:inventory_items,sku',
             'quantity' => 'required|integer|min:0',
             'unit' => 'required|string|max:50',
             'location' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'low_stock_threshold' => 'nullable|integer|min:0', // Tambahkan ini jika ada
+            'low_stock_threshold' => 'nullable|integer|min:0',
+            'store_id' => 'required|exists:stores,id',
         ]);
 
-        // Tambahkan user_id dari pengguna yang sedang login sebagai last_updater_id
         $itemData = array_merge($validated, ['last_updater_id' => Auth::id()]);
 
         InventoryItem::create($itemData);
 
-        return redirect()->route('inventory.index') // Sesuaikan nama route jika berbeda
-            ->with('success', 'Inventory item created successfully.'); // Gunakan 'success' untuk flash message
+        return redirect()->route('inventory.index')
+            ->with('message', 'inventory item created.');
     }
 
     public function show(InventoryItem $inventoryItem): InertiaResponse // Atau RedirectResponse
@@ -115,21 +114,22 @@ class InventoryItemController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'type' => 'required|string|in:filter,mesin,alat,sparepart',
             'sku' => ['required', 'string', 'max:255', Rule::unique('inventory_items')->ignore($inventoryItem->id)],
             'quantity' => 'required|integer|min:0',
             'unit' => 'required|string|max:50',
             'location' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'low_stock_threshold' => 'nullable|integer|min:0', // Tambahkan ini jika ada
+            'low_stock_threshold' => 'nullable|integer|min:0',
+            'store_id' => 'required|exists:stores,id',
         ]);
 
-        // Update last_updater_id
         $itemData = array_merge($validated, ['last_updater_id' => Auth::id()]);
 
         $inventoryItem->update($itemData);
 
-        return redirect()->route('inventory.index') // Sesuaikan nama route
-            ->with('success', 'Inventory item updated successfully.');
+        return redirect()->route('inventory.index')
+            ->with('message', 'inventory item updated.');
     }
 
     public function destroy(InventoryItem $inventoryItem): RedirectResponse
@@ -137,7 +137,7 @@ class InventoryItemController extends Controller
         $this->authorize('delete', $inventoryItem);
         $inventoryItem->delete();
 
-        return Redirect::route('inventory.index') // Sesuaikan nama route
-            ->with('success', 'Inventory item deleted successfully.');
+        return Redirect::route('inventory.index')
+            ->with('message', 'inventory item deleted.');
     }
 }

@@ -12,6 +12,7 @@ class InventoryItem extends Model
 
     protected $fillable = [
         'name',
+        'type',
         'sku',
         'quantity',
         'unit',
@@ -61,7 +62,39 @@ class InventoryItem extends Model
      */
     public function scopeByType($query, string $type)
     {
-        return $query->where('sku', 'like', "{$type}-%");
+        return $query->where('type', $type);
+    }
+
+    /**
+     * Scope untuk item filter
+     */
+    public function scopeFilters($query)
+    {
+        return $query->where('type', 'filter');
+    }
+
+    /**
+     * Scope untuk mesin
+     */
+    public function scopeMesin($query)
+    {
+        return $query->where('type', 'mesin');
+    }
+
+    /**
+     * Scope untuk alat
+     */
+    public function scopeAlat($query)
+    {
+        return $query->where('type', 'alat');
+    }
+
+    /**
+     * Scope untuk sparepart
+     */
+    public function scopeSparepart($query)
+    {
+        return $query->where('type', 'sparepart');
     }
 
     /**

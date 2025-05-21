@@ -41,7 +41,7 @@ class FeedbackController extends Controller
                 $query->where('status', $status); // Asumsi ada kolom 'status' di tabel feedback
             });
 
-        $feedbacks = $query->latest()->paginate(10)->withQueryString();
+        $feedbacks = $query->latest()->paginate(12)->withQueryString();
 
         // Opsi untuk filter dropdown (contoh, Anda bisa membuatnya lebih dinamis)
         $feedbackTypes = [ // Atau ambil dari database/config

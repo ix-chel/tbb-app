@@ -11,7 +11,7 @@ use App\Models\User;
 use App\Models\Company;
 use App\Models\Store;
 use Spatie\Permission\Models\Role;
-use Database\Seeders\RoleSeeder;
+use Database\Seeders\RolesAndPermissionsSeeder;
 
 class MaintenanceScheduleTest extends TestCase
 {
@@ -27,7 +27,7 @@ class MaintenanceScheduleTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed(RoleSeeder::class);
+        $this->seed(RolesAndPermissionsSeeder::class);
         $this->company = Company::factory()->create();
         $this->store = Store::factory()->create(['company_id' => $this->company->id]);
         

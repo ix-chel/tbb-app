@@ -18,6 +18,7 @@ use App\Http\Controllers\Auth\AuthController;
 use Spatie\Permission\Middleware\RoleMiddleware;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use App\Http\Controllers\FilterQRController;
 
 
 
@@ -37,38 +38,45 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/dashboard', function () {
-        $user = Auth::user()->load('roles'); // Eager load role untuk akses di komponen
-        // Anda bisa meneruskan data pengguna dan perannya ke komponen Inertia
-        // Untuk logika tampilan dashboard yang berbeda berdasarkan peran,
-        // biasanya lebih baik ditangani di sisi frontend (komponen Inertia)
-        // atau dengan mengembalikan komponen Inertia yang berbeda dari sini.
-        return Inertia::render('dashboard', [
-            'auth' => [
-                'user' => $user,
-                'role_name' => $user->role ? $user->role->name : null,
-            ]
-        ]);
+        // Debug information
+        $user = auth()->user();
+        \Log::info('User roles:', $user->getRoleNames()->toArray());
+        \Log::info('User permissions:', $user->getAllPermissions()->pluck('name')->toArray());
+        
+        return Inertia::render('dashboard');
     })->name('dashboard');
 
     // Rute untuk super-admin
     Route::middleware(['role:super-admin'])->group(function () {
         Route::resource('companies', CompanyController::class);
-        Route::resource('schedules', MaintenanceScheduleController::class);
         Route::resource('stores', StoreController::class);
-        Route::resource('inventory', InventoryItemController::class);
         Route::resource('feedback', FeedbackController::class);
-
     });
 
     // Rute untuk super-admin dan Admin
     Route::middleware(['role:super-admin|admin'])->group(function () {
+        Route::resource('companies', CompanyController::class);
         Route::resource('stores', StoreController::class);
-        Route::resource('inventory', InventoryItemController::class);
+        Route::resource('users', UserController::class);
+        
+        // QR Code Routes
+        Route::get('/filter-qr', [FilterQRController::class, 'index'])->name('filter-qr.index');
+        Route::get('/filter-qr/create', [FilterQRController::class, 'create'])->name('filter-qr.create');
+        Route::post('/filter-qr', [FilterQRController::class, 'store'])->name('filter-qr.store');
+        Route::get('/filter-qr/{filterQR}', [FilterQRController::class, 'show'])->name('filter-qr.show');
+        Route::put('/filter-qr/{filterQR}', [FilterQRController::class, 'update'])->name('filter-qr.update');
+        Route::delete('/filter-qr/{filterQR}', [FilterQRController::class, 'destroy'])->name('filter-qr.destroy');
     });
 
-    // Rute untuk technician
-    Route::middleware(['role:technician'])->group(function () {
-        Route::resource('maintenance', MaintenanceScheduleController::class);
+    // Rute untuk maintenance schedule (super-admin, admin, dan technician)
+    Route::middleware(['role:super-admin|admin|technician'])->group(function () {
+        Route::resource('schedules', MaintenanceScheduleController::class);
+        Route::post('/filter-qr/scan', [FilterQRController::class, 'scan'])->name('filter-qr.scan');
+    });
+
+    // Rute untuk super-admin, admin, dan technician
+    Route::middleware(['role:super-admin|admin|technician'])->group(function () {
+        Route::resource('inventory', InventoryItemController::class);
     });
 
     // Rute untuk semua role yang sudah login

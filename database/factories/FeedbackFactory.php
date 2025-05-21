@@ -13,8 +13,11 @@ class FeedbackFactory extends Factory
 
     public function definition(): array
     {
+        // Gunakan user yang sudah ada atau buat baru jika tidak ada
+        $user = User::first() ?? User::factory()->create();
+        
         return [
-            'user_id' => User::factory(),
+            'user_id' => $user->id,
             'store_id' => Store::factory(),
             'title' => $this->faker->sentence(),
             'message' => $this->faker->paragraph(),

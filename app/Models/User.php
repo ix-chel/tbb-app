@@ -47,4 +47,9 @@ class User extends Authenticatable implements MustVerifyEmail // Implement MustV
         'email_verified_at' => 'datetime',
         'password' => 'hashed', // Gunakan 'hashed' untuk Laravel 9+
     ];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 }

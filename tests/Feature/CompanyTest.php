@@ -63,7 +63,8 @@ class CompanyTest extends TestCase
     {
         $companyData = Company::factory()->raw();
         $response = $this->actingAs($this->superAdmin)
-            ->post(route('companies.store'), $companyData);
+            ->withSession(['_token' => 'test'])
+            ->post(route('companies.store'), array_merge($companyData, ['_token' => 'test']));
 
         $response->assertRedirect(route('companies.index'));
         $this->assertDatabaseHas('companies', $companyData);
@@ -73,7 +74,8 @@ class CompanyTest extends TestCase
     {
         $companyData = Company::factory()->raw();
         $response = $this->actingAs($this->admin)
-            ->post(route('companies.store'), $companyData);
+            ->withSession(['_token' => 'test'])
+            ->post(route('companies.store'), array_merge($companyData, ['_token' => 'test']));
 
         $response->assertRedirect(route('companies.index'));
         $this->assertDatabaseHas('companies', $companyData);
@@ -83,7 +85,8 @@ class CompanyTest extends TestCase
     {
         $companyData = Company::factory()->raw();
         $response = $this->actingAs($this->client)
-            ->post(route('companies.store'), $companyData);
+            ->withSession(['_token' => 'test'])
+            ->post(route('companies.store'), array_merge($companyData, ['_token' => 'test']));
 
         $response->assertStatus(403);
         $this->assertDatabaseMissing('companies', $companyData);
@@ -95,7 +98,8 @@ class CompanyTest extends TestCase
         $updateData = Company::factory()->raw();
 
         $response = $this->actingAs($this->superAdmin)
-            ->put(route('companies.update', $company), $updateData);
+            ->withSession(['_token' => 'test'])
+            ->put(route('companies.update', $company), array_merge($updateData, ['_token' => 'test']));
 
         $response->assertRedirect(route('companies.index'));
         $this->assertDatabaseHas('companies', $updateData);
@@ -107,7 +111,8 @@ class CompanyTest extends TestCase
         $updateData = Company::factory()->raw();
 
         $response = $this->actingAs($this->admin)
-            ->put(route('companies.update', $company), $updateData);
+            ->withSession(['_token' => 'test'])
+            ->put(route('companies.update', $company), array_merge($updateData, ['_token' => 'test']));
 
         $response->assertRedirect(route('companies.index'));
         $this->assertDatabaseHas('companies', $updateData);
@@ -119,7 +124,8 @@ class CompanyTest extends TestCase
         $updateData = Company::factory()->raw();
 
         $response = $this->actingAs($this->client)
-            ->put(route('companies.update', $company), $updateData);
+            ->withSession(['_token' => 'test'])
+            ->put(route('companies.update', $company), array_merge($updateData, ['_token' => 'test']));
 
         $response->assertStatus(403);
         $this->assertDatabaseMissing('companies', $updateData);
@@ -131,7 +137,8 @@ class CompanyTest extends TestCase
 
         // super-admin can delete
         $response = $this->actingAs($this->superAdmin)
-            ->delete(route('companies.destroy', $company));
+            ->withSession(['_token' => 'test'])
+            ->delete(route('companies.destroy', $company), ['_token' => 'test']);
 
         $response->assertRedirect(route('companies.index'));
         $this->assertDatabaseMissing('companies', ['id' => $company->id]);
@@ -139,7 +146,8 @@ class CompanyTest extends TestCase
         // Admin cannot delete
         $company = Company::factory()->create();
         $response = $this->actingAs($this->admin)
-            ->delete(route('companies.destroy', $company));
+            ->withSession(['_token' => 'test'])
+            ->delete(route('companies.destroy', $company), ['_token' => 'test']);
 
         $response->assertStatus(403);
         $this->assertDatabaseHas('companies', ['id' => $company->id]);
@@ -150,9 +158,10 @@ class CompanyTest extends TestCase
         $company = Company::factory()->create();
 
         $response = $this->actingAs($this->client)
-            ->delete(route('companies.destroy', $company));
+            ->withSession(['_token' => 'test'])
+            ->delete(route('companies.destroy', $company), ['_token' => 'test']);
 
         $response->assertStatus(403);
         $this->assertDatabaseHas('companies', ['id' => $company->id]);
     }
-} 
+}

@@ -30,8 +30,6 @@ class MaintenanceScheduleController extends Controller
             $query->whereHas('store', fn ($q) => $q->where('company_id', $user->company_id));
         } elseif ($user->hasRole('technician')) {
             $query->where('user_id', $user->id);
-        } elseif (!$user->hasRole('Admin') && !$user->hasRole('super-admin')) {
-            $query->whereRaw('1 = 0');
         }
 
         // Input-based filter

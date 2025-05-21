@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 use App\Models\Feedback;
-use Database\Seeders\RoleSeeder;
+use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -18,7 +18,7 @@ class FeedbackTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->seed(RoleSeeder::class);
+        $this->seed(RolesAndPermissionsSeeder::class);
         
         $this->user = User::factory()->create();
         $this->user->assignRole('client');

@@ -12,7 +12,7 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                     <SidebarMenuItem key={item.title}>
                         <SidebarMenuButton  
                             asChild
-                            isActive={item.href === page.url}
+                            isActive={item.current || item.href === page.url}
                             tooltip={{ children: item.title }}
                         >
                             <Link 

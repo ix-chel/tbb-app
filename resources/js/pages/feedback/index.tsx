@@ -75,7 +75,7 @@ export default function Index({ auth, feedbackItems, filters: initialFilters, fe
         >
             <Head title="Daftar Feedback" />
 
-            <div className="py-6 md:py-12">
+            <div className="py-6 md:py-12 bg-gray-100 dark:bg-gray-900">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {flash?.success && (
                         <div className="mb-4 p-4 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-100 border border-green-300 dark:border-green-700 rounded">

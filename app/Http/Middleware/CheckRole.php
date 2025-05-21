@@ -37,9 +37,8 @@ class CheckRole
             $user->load('role');
         }
 
-        // 4. Periksa apakah pengguna memiliki relasi 'role' dan apakah nama perannya
-        //    ada dalam daftar peran yang diizinkan ($roles).
-        if ($user->role && in_array($user->role->name, $roles, true)) {
+        // 4. Periksa apakah user memiliki salah satu role yang diizinkan
+        if ($user->hasAnyRole($roles)) {
             // Jika pengguna memiliki salah satu peran yang diizinkan, lanjutkan permintaan
             return $next($request);
         }

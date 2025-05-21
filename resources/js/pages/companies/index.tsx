@@ -68,10 +68,10 @@ export default function Index({ auth, companies, filters, flash }: IndexProps) {
         <AppLayout breadcrumbs={breadcrumbs} user={auth.user}>
             <Head title="Companies" />
             
-            <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-6">
+            <div className="flex h-full flex-1 flex-col gap-6 p-6 bg-gray-100 dark:bg-gray-900">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Header */}
-                    <div className="flex justify-between items-center mb-6">
+                    <div className="flex flex-col md:flex-row justify-between items-center mb-6">
                         <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Daftar Perusahaan</h1>
                         <Link
                             href={route('companies.create')}
@@ -85,7 +85,7 @@ export default function Index({ auth, companies, filters, flash }: IndexProps) {
                     {/* Search & Filter */}
                     <div className="mb-6 flex gap-4">
                         <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
                             <input
                                 type="text"
                                 placeholder="Cari perusahaan..."
@@ -111,7 +111,7 @@ export default function Index({ auth, companies, filters, flash }: IndexProps) {
                     <div className="bg-white dark:bg-gray-800 shadow overflow-hidden rounded-lg">
                         <div className="overflow-x-auto">
                             <table className="w-full">
-                                <thead className="bg-gray-50 dark:bg-gray-700">
+                                <thead className="bg-gray-100 dark:bg-gray-700">
                                     <tr>
                                         <th
                                             scope="col"
@@ -137,12 +137,7 @@ export default function Index({ auth, companies, filters, flash }: IndexProps) {
                                         >
                                             Contact Phone
                                         </th>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
-                                        >
-                                            Aksi
-                                        </th>
+                                        
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -167,12 +162,6 @@ export default function Index({ auth, companies, filters, flash }: IndexProps) {
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{company.contact_person_name || '-'}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{company.contact_person_phone || '-'}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <button
-                                                    onClick={(e) => handleDetailButtonClick(e, company)}
-                                                    className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 focus:outline-none"
-                                                >
-                                                    Detail
-                                                </button>
                                                 {/* Anda bisa menambahkan link Edit atau Delete di sini */}
                                                 {/* <Link href={route('companies.edit', company.id)} className="ml-4 text-yellow-600 hover:text-yellow-900">Edit</Link> */}
                                             </td>
