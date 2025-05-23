@@ -12,9 +12,16 @@ use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\Color\Color;
 use Endroid\QrCode\Encoding\Encoding;
-use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
-use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Label\Label;
+use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
+use Endroid\QrCode\Label\Alignment\LabelAlignmentCenter;
+use Endroid\QrCode\Label\Font\NotoSans;
+use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
+//use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -89,29 +96,32 @@ class FilterQRController extends Controller
             'installation_date' => 'nullable|date',
             'expiry_date' => 'nullable|date|after:installation_date',
             'notes' => 'nullable|string',
+            'contact_person' => 'nullable|string',
+            'contact_phone' => 'nullable|string',
+            'contact_email' => 'nullable|email',
         ]);
 
         // Generate QR code
         $qrCode = Str::uuid()->toString();
         
-        // Buat QR code dengan endroid/qr-code
-        $qrCodeObj = new QrCode($qrCode);
-        $qrCodeObj->setSize(300);
-        $qrCodeObj->setMargin(10);
-        $qrCodeObj->setEncoding(new Encoding('UTF-8'));
-        $qrCodeObj->setErrorCorrectionLevel(new ErrorCorrectionLevelHigh());
-        $qrCodeObj->setForegroundColor(new Color(0, 0, 0));
-        $qrCodeObj->setBackgroundColor(new Color(255, 255, 255));
-        $qrCodeObj->setRoundBlockSizeMode(new RoundBlockSizeModeMargin());
-
-        // Tambahkan label
-        $label = Label::create('Filter QR Code');
-        $label->setTextColor(new Color(0, 0, 0));
-        $qrCodeObj->setLabel($label);
+        // Buat QR code dengan Builder pattern sesuai versi 6.x
+        $result = Builder::create()
+            ->writer(new PngWriter())
+            ->writerOptions([])
+            ->data($qrCode)
+            ->encoding(new Encoding('UTF-8'))
+            ->errorCorrectionLevel(new ErrorCorrectionLevelHigh())
+            ->size(300)
+            ->margin(10)
+            ->roundBlockSizeMode(new RoundBlockSizeModeMargin())
+            ->foregroundColor(0, 0, 0)
+            ->backgroundColor(255, 255, 255)
+            ->labelText('Filter QR Code')
+            ->labelFont(new NotoSans(20))
+            ->labelAlignment(new LabelAlignmentCenter())
+            ->build();
 
         // Generate QR code image
-        $writer = new PngWriter();
-        $result = $writer->write($qrCodeObj);
         $qrImage = $result->getString();
 
         // Simpan QR code
@@ -125,7 +135,7 @@ class FilterQRController extends Controller
         $path = "qrcodes/{$filterQR->id}.png";
         \Storage::put("public/{$path}", $qrImage);
 
-        return redirect()->route('filter-qr.index')
+        return redirect()->route('FilterQR.index')
             ->with('message', 'QR code berhasil dibuat.');
     }
 
@@ -153,11 +163,14 @@ class FilterQRController extends Controller
         $validated = $request->validate([
             'status' => 'required|in:active,inactive,expired',
             'notes' => 'nullable|string',
+            'contact_person' => 'nullable|string',
+            'contact_phone' => 'nullable|string',
+            'contact_email' => 'nullable|email',
         ]);
 
         $filterQR->update($validated);
 
-        return redirect()->route('filter-qr.show', $filterQR)
+        return redirect()->route('FilterQR.show', $filterQR)
             ->with('message', 'Status QR code berhasil diperbarui.');
     }
 
@@ -173,7 +186,7 @@ class FilterQRController extends Controller
 
         $filterQR->delete();
 
-        return redirect()->route('filter-qr.index')
+        return redirect()->route('FilterQR.index')
             ->with('message', 'QR code berhasil dihapus.');
     }
 

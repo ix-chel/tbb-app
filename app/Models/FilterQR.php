@@ -20,7 +20,10 @@ class FilterQR extends Model
         'last_scan_at',
         'installation_date',
         'expiry_date',
-        'notes'
+        'notes',
+        'contact_person',
+        'contact_phone',
+        'contact_email'
     ];
 
     protected $casts = [

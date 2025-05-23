@@ -60,18 +60,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('users', UserController::class);
         
         // QR Code Routes
-        Route::get('/filter-qr', [FilterQRController::class, 'index'])->name('filter-qr.index');
-        Route::get('/filter-qr/create', [FilterQRController::class, 'create'])->name('filter-qr.create');
-        Route::post('/filter-qr', [FilterQRController::class, 'store'])->name('filter-qr.store');
-        Route::get('/filter-qr/{filterQR}', [FilterQRController::class, 'show'])->name('filter-qr.show');
-        Route::put('/filter-qr/{filterQR}', [FilterQRController::class, 'update'])->name('filter-qr.update');
-        Route::delete('/filter-qr/{filterQR}', [FilterQRController::class, 'destroy'])->name('filter-qr.destroy');
+        Route::get('/FilterQR', [FilterQRController::class, 'index'])->name('FilterQR.index');
+        Route::get('/FilterQR/create', [FilterQRController::class, 'create'])->name('FilterQR.create');
+        Route::post('/FilterQR', [FilterQRController::class, 'store'])->name('FilterQR.store');
+        Route::get('/FilterQR/{FilterQR}', [FilterQRController::class, 'show'])->name('FilterQR.show');
+        Route::put('/FilterQR/{FilterQR}', [FilterQRController::class, 'update'])->name('FilterQR.update');
+        Route::delete('/FilterQR/{FilterQR}', [FilterQRController::class, 'destroy'])->name('FilterQR.destroy');
     });
 
     // Rute untuk maintenance schedule (super-admin, admin, dan technician)
     Route::middleware(['role:super-admin|admin|technician'])->group(function () {
         Route::resource('schedules', MaintenanceScheduleController::class);
-        Route::post('/filter-qr/scan', [FilterQRController::class, 'scan'])->name('filter-qr.scan');
+        Route::post('/FilterQR/scan', [FilterQRController::class, 'scan'])->name('FilterQR.scan');
     });
 
     // Rute untuk super-admin, admin, dan technician

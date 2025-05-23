@@ -53,7 +53,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'QR Code',
-        href: '/filter-qr',
+        href: '/FilterQR',
         icon: QrCode,
     },
     {

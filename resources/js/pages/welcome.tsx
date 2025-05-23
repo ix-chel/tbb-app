@@ -1,13 +1,14 @@
 import { type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { CheckCircle, Clock, QrCode, FileText, ChevronRight } from 'lucide-react';
+import AppLogoIcon from '@/components/app-logo-icon';
 
 export default function Welcome() {
     const { auth } = usePage<SharedData>().props || {};
 
     return (
         <>
-            <Head title="Jasa Perawatan Filter Air Profesional Berbasis QR Code">
+            <Head title="Toya Bumi Bersih">
                 <meta name="description" content="Layanan perawatan filter air untuk perusahaan & toko. Sistem maintenance otomatis & laporan real-time. Daftar gratis sekarang!" />
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
@@ -17,7 +18,7 @@ export default function Welcome() {
                 <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800">
                     <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <QrCode className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                            <AppLogoIcon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                             <span className="text-xl font-semibold text-gray-900 dark:text-white">Toya Bumi Bersih</span>
                         </div>
                         <div className="flex items-center gap-4">
@@ -54,7 +55,7 @@ export default function Welcome() {
                         <div className="grid lg:grid-cols-2 gap-12 items-center">
                             <div>
                                 <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-                                    Jasa Perawatan & Instalasi Filter Air Terpercaya untuk Bisnis Anda
+                                    Jasa Perawatan & Instalasi Filter Air <span className="text-blue-600">Terpercaya</span> untuk Bisnis Anda
                                 </h1>
                                 <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
                                     Sistem maintenance modern berbasis QR Code untuk memantau filter air Anda dari mana saja
@@ -270,7 +271,7 @@ export default function Welcome() {
                         <div className="grid md:grid-cols-4 gap-8">
                             <div>
                                 <div className="flex items-center gap-2 mb-4">
-                                    <QrCode className="w-8 h-8 text-blue-400" />
+                                    <AppLogoIcon className="w-8 h-8 text-blue-400" />
                                     <span className="text-xl font-semibold text-white">Toya Bumi Bersih</span>
                                 </div>
                                 <p className="text-gray-400">
@@ -303,7 +304,7 @@ export default function Welcome() {
                         </div>
                         <div className="border-t border-gray-800 mt-12 pt-8 text-center">
                             <p className="text-gray-400">
-                                © 2024 Toya Bumi Bersih. All rights reserved.
+                                © {new Date().getFullYear()} Toya Bumi Bersih. All rights reserved.
                             </p>
                         </div>
                     </div>

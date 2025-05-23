@@ -1,31 +1,37 @@
 import { Head, useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Select } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-
-interface Store {
-    id: number;
-    name: string;
-}
-
-interface Filter {
-    id: number;
-    name: string;
-}
+import { QrCode, Download, LoaderCircle, Calendar, MapPin, User, Phone, Mail, FileText } from 'lucide-react';
+import LoadingOverlay from '@/components/loading-overlay';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 
 interface FilterQR {
     id: number;
     qr_code: string;
-    status: 'active' | 'inactive' | 'expired';
+    store: {
+        id: number;
+        name: string;
+        address: string;
+        contact_person: string;
+    };
+    filter: {
+        id: number;
+        name: string;
+        type: string;
+    };
+    status: string;
     last_scan_at: string | null;
-    installation_date: string | null;
-    expiry_date: string | null;
-    notes: string | null;
-    store: Store;
-    filter: Filter;
+    installation_date: string;
+    expiry_date: string;
+    notes: string;
+    contact_person: string;
+    contact_phone: string;
+    contact_email: string;
 }
 
 interface Props {
@@ -34,102 +40,159 @@ interface Props {
 
 export default function Show({ qr }: Props) {
     const { data, setData, put, processing, errors } = useForm({
-        status: qr.status,
+        status: qr.status || 'active',
         notes: qr.notes || '',
+        contact_person: qr.contact_person || '',
+        contact_phone: qr.contact_phone || '',
+        contact_email: qr.contact_email || '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(route('filter-qr.update', qr.id));
+        if (!data.status) {
+            return;
+        }
+        put(route('FilterQR.update', qr.id));
     };
 
     return (
         <AppLayout>
-            <Head title="QR Code Details" />
+            <Head title="Detail QR Code" />
+            <LoadingOverlay isLoading={processing} message="Memperbarui status..." />
 
             <div className="container mx-auto py-6">
                 <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-2xl font-semibold">QR Code Details</h1>
-                    <Button variant="outline" onClick={() => window.history.back()}>
-                        Back
+                    <div>
+                        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Detail QR Code</h1>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            Informasi lengkap tentang QR Code filter
+                        </p>
+                    </div>
+                    <Button
+                        variant="outline"
+                        onClick={() => window.history.back()}
+                    >
+                        Kembali
                     </Button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Card>
+                    <Card className="animate-fade-in">
                         <CardHeader>
-                            <CardTitle>QR Code Information</CardTitle>
+                            <CardTitle>Informasi QR Code</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-4">
-                                <div>
-                                    <Label>QR Code</Label>
-                                    <p className="text-lg font-mono">{qr.qr_code}</p>
+                            <div className="space-y-6">
+                                <div className="flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                    <QrCode className="w-32 h-32 text-gray-400" />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Status</h3>
+                                        <Badge
+                                            variant={
+                                                qr.status === 'active'
+                                                    ? 'default'
+                                                    : qr.status === 'inactive'
+                                                    ? 'secondary'
+                                                    : 'destructive'
+                                            }
+                                            className="mt-1"
+                                        >
+                                            {qr.status === 'active' ? 'Aktif' : 
+                                             qr.status === 'inactive' ? 'Nonaktif' : 
+                                             'Kadaluarsa'}
+                                        </Badge>
+                                    </div>
+
+                                    <div>
+                                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Terakhir Diperiksa</h3>
+                                        <p className="mt-1 text-sm text-gray-900 dark:text-white">
+                                            {qr.last_scan_at
+                                                ? new Date(qr.last_scan_at).toLocaleDateString('id-ID', {
+                                                    day: 'numeric',
+                                                    month: 'long',
+                                                    year: 'numeric',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                  })
+                                                : 'Belum pernah'}
+                                        </p>
+                                    </div>
                                 </div>
 
                                 <div>
-                                    <Label>Store</Label>
-                                    <p className="text-lg">{qr.store.name}</p>
+                                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Toko</h3>
+                                    <div className="mt-1 flex items-center text-sm text-gray-900 dark:text-white">
+                                        <MapPin className="w-4 h-4 mr-2 text-gray-400" />
+                                        {qr.store.name}
+                                    </div>
+                                    <div className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                        {qr.store.address}
+                                    </div>
                                 </div>
 
                                 <div>
-                                    <Label>Filter</Label>
-                                    <p className="text-lg">{qr.filter.name}</p>
-                                </div>
-
-                                <div>
-                                    <Label>Status</Label>
-                                    <Badge
-                                        variant={
-                                            qr.status === 'active'
-                                                ? 'default'
-                                                : qr.status === 'inactive'
-                                                ? 'secondary'
-                                                : 'destructive'
-                                        }
-                                    >
-                                        {qr.status}
-                                    </Badge>
-                                </div>
-
-                                <div>
-                                    <Label>Last Scan</Label>
-                                    <p className="text-lg">
-                                        {qr.last_scan_at
-                                            ? new Date(qr.last_scan_at).toLocaleString()
-                                            : 'Never'}
+                                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Filter</h3>
+                                    <p className="mt-1 text-sm text-gray-900 dark:text-white">
+                                        {qr.filter.name}
+                                    </p>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                                        {qr.filter.type}
                                     </p>
                                 </div>
 
-                                <div>
-                                    <Label>Installation Date</Label>
-                                    <p className="text-lg">
-                                        {qr.installation_date
-                                            ? new Date(qr.installation_date).toLocaleDateString()
-                                            : '-'}
-                                    </p>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Tanggal Instalasi</h3>
+                                        <div className="mt-1 flex items-center text-sm text-gray-900 dark:text-white">
+                                            <Calendar className="w-4 h-4 mr-2 text-gray-400" />
+                                            {new Date(qr.installation_date).toLocaleDateString('id-ID')}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Tanggal Kadaluarsa</h3>
+                                        <div className="mt-1 flex items-center text-sm text-gray-900 dark:text-white">
+                                            <Calendar className="w-4 h-4 mr-2 text-gray-400" />
+                                            {new Date(qr.expiry_date).toLocaleDateString('id-ID')}
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div>
-                                    <Label>Expiry Date</Label>
-                                    <p className="text-lg">
-                                        {qr.expiry_date
-                                            ? new Date(qr.expiry_date).toLocaleDateString()
-                                            : '-'}
-                                    </p>
+                                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Kontak</h3>
+                                    <div className="mt-1 space-y-2">
+                                        <div className="flex items-center text-sm text-gray-900 dark:text-white">
+                                            <User className="w-4 h-4 mr-2 text-gray-400" />
+                                            {qr.contact_person || '-'}
+                                        </div>
+                                        <div className="flex items-center text-sm text-gray-900 dark:text-white">
+                                            <Phone className="w-4 h-4 mr-2 text-gray-400" />
+                                            {qr.contact_phone || '-'}
+                                        </div>
+                                        <div className="flex items-center text-sm text-gray-900 dark:text-white">
+                                            <Mail className="w-4 h-4 mr-2 text-gray-400" />
+                                            {qr.contact_email || '-'}
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div>
-                                    <Label>Notes</Label>
-                                    <p className="text-lg">{qr.notes || '-'}</p>
+                                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Catatan</h3>
+                                    <div className="mt-1 flex items-start text-sm text-gray-900 dark:text-white">
+                                        <FileText className="w-4 h-4 mr-2 text-gray-400 mt-1" />
+                                        <p className="whitespace-pre-wrap">{qr.notes || '-'}</p>
+                                    </div>
                                 </div>
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card>
+                    <Card className="animate-fade-in">
                         <CardHeader>
-                            <CardTitle>Update Status</CardTitle>
+                            <CardTitle>Perbarui Status</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-6">
@@ -137,32 +200,92 @@ export default function Show({ qr }: Props) {
                                     <Label htmlFor="status">Status</Label>
                                     <Select
                                         value={data.status}
-                                        onValueChange={(value: 'active' | 'inactive' | 'expired') => setData('status', value)}
+                                        onValueChange={(value) => setData('status', value)}
                                     >
-                                        <option value="active">Active</option>
-                                        <option value="inactive">Inactive</option>
-                                        <option value="expired">Expired</option>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Pilih status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="active">Aktif</SelectItem>
+                                            <SelectItem value="inactive">Nonaktif</SelectItem>
+                                            <SelectItem value="expired">Kadaluarsa</SelectItem>
+                                        </SelectContent>
                                     </Select>
+                                    {errors.status && (
+                                        <p className="text-sm text-red-500">{errors.status}</p>
+                                    )}
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="notes">Notes</Label>
-                                    <textarea
+                                    <Label htmlFor="contact_person">Nama Kontak</Label>
+                                    <Input
+                                        type="text"
+                                        id="contact_person"
+                                        value={data.contact_person}
+                                        onChange={(e) => setData('contact_person', e.target.value)}
+                                        placeholder="Masukkan nama kontak"
+                                    />
+                                    {errors.contact_person && (
+                                        <p className="text-sm text-red-500">{errors.contact_person}</p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="contact_phone">Nomor Telepon</Label>
+                                    <Input
+                                        type="tel"
+                                        id="contact_phone"
+                                        value={data.contact_phone}
+                                        onChange={(e) => setData('contact_phone', e.target.value)}
+                                        placeholder="Masukkan nomor telepon"
+                                    />
+                                    {errors.contact_phone && (
+                                        <p className="text-sm text-red-500">{errors.contact_phone}</p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="contact_email">Email</Label>
+                                    <Input
+                                        type="email"
+                                        id="contact_email"
+                                        value={data.contact_email}
+                                        onChange={(e) => setData('contact_email', e.target.value)}
+                                        placeholder="Masukkan email"
+                                    />
+                                    {errors.contact_email && (
+                                        <p className="text-sm text-red-500">{errors.contact_email}</p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="notes">Catatan</Label>
+                                    <Textarea
                                         id="notes"
                                         value={data.notes}
                                         onChange={(e) => setData('notes', e.target.value)}
-                                        className={`w-full min-h-[100px] p-2 border rounded-md ${errors.notes ? 'border-red-500' : ''}`}
+                                        placeholder="Masukkan catatan tambahan"
+                                        rows={4}
                                     />
                                     {errors.notes && (
                                         <p className="text-sm text-red-500">{errors.notes}</p>
                                     )}
                                 </div>
 
-                                <div className="flex justify-end">
-                                    <Button type="submit" disabled={processing}>
-                                        Update Status
-                                    </Button>
-                                </div>
+                                <Button
+                                    type="submit"
+                                    className="w-full"
+                                    disabled={processing}
+                                >
+                                    {processing ? (
+                                        <>
+                                            <LoaderCircle className="w-4 h-4 mr-2 animate-spin" />
+                                            Memperbarui...
+                                        </>
+                                    ) : (
+                                        'Perbarui Status'
+                                    )}
+                                </Button>
                             </form>
                         </CardContent>
                     </Card>

@@ -1,0 +1,68 @@
+FLOW QR CODE GENERATION IMMS (Real-World Based)
+Tujuan Utama:
+Setiap store (cabang) milik client punya 1 QR Code unik yang mewakili alat/filter di lokasi tersebut. Teknisi nanti scan QR itu buat submit laporan, tracking servis, dll.
+
+Alur Proses:
+1. Client Registrasi
+Client (Company) daftar via form (nama perusahaan, kontak, jumlah cabang/store).
+
+Masuk ke list pending konfirmasi.
+
+2. Admin Verifikasi & Input Store
+Admin verifikasi data client.
+
+Admin tambahkan daftar store milik client:
+
+Nama toko
+
+Alamat
+
+PIC di lokasi
+
+Tipe alat/filter
+
+Untuk setiap store yang ditambahkan → langsung dibuat QR Code.
+
+3. Generate QR Code (per Store)
+Sistem generate QR Code dengan data berikut (disimpan di DB):
+
+json
+Salin
+Edit
+{
+  "store_id": "UUID",
+  "store_name": "Toko Air Sehat",
+  "company_id": "UUID",
+  "location": "Jl. Mawar No. 12, Bekasi",
+  "type": "Filter RO 5 tahap"
+}
+QR Code encode minimal store_id (yang bisa resolve ke detail store dari backend).
+
+Disimpan sebagai file (SVG/PNG) dan juga sebagai URL yang bisa diakses teknisi.
+
+4. Distribusi QR Code
+Admin bisa:
+
+Download QR-nya
+
+Print/Share ke teknisi
+
+Tampilkan preview di dashboard store detail
+
+QR ditempel langsung di lokasi alat (fisik)
+
+5. Teknisi Scan QR Code di Lapangan
+Scan pakai app (mobile web / PWA)
+
+Redirect ke halaman form:
+
+Verifikasi store
+
+Submit laporan maintenance (foto, catatan, checklist)
+
+Sistem otomatis tahu ini dari store_id di QR-nya.
+
+6. Laporan Masuk ke Admin
+Admin dapat notifikasi
+
+Verifikasi laporan → approve atau minta revisi
