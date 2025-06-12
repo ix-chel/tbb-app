@@ -40,11 +40,11 @@ class InventoryItemFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->word,
-            'sku' => $this->faker->unique()->regexify('[A-Z]{2}-[0-9]{4}'),
+            'name' => 'Generic Filter',
+            'sku' => 'XX-' . $this->faker->unique()->numberBetween(1000, 9999),
             'quantity' => $this->faker->numberBetween(0, 100),
             'unit' => 'pcs',
-            'location' => $this->faker->word,
+            'location' => $this->faker->city,
             'description' => $this->faker->sentence,
             'store_id' => Store::factory(),
         ];

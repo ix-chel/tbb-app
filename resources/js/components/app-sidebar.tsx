@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Store, Wrench, MessageSquare, Building2, Package, PersonStanding, QrCode } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, Store, Wrench, MessageSquare, Building2, Package, PersonStanding, QrCode, FileText } from 'lucide-react';
 import { useMemo } from 'react';
 import AppLogo from './app-logo';
 
@@ -15,6 +15,8 @@ const iconMap: Record<string, any> = {
     'cube': Package,
     'wrench-screwdriver': Wrench,
     'chat-bubble-left-right': MessageSquare,
+    'qr-code': QrCode,
+    'file-text': FileText,
 };
 
 const footerNavItems: NavItem[] = [
@@ -55,6 +57,11 @@ const mainNavItems: NavItem[] = [
         title: 'QR Code',
         href: '/FilterQR',
         icon: QrCode,
+    },
+    {
+        title: 'Maintenance Reports',
+        href: '/maintenancereport',
+        icon: FileText,
     },
     {
         title: 'Maintenance Schedule',

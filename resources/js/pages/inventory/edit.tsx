@@ -43,7 +43,7 @@ export default function Edit({ auth, inventoryItem, flash }: EditProps) {
             quantity: parseFloat(String(data.quantity)),
             low_stock_threshold: data.low_stock_threshold === '' ? null : parseInt(String(data.low_stock_threshold)),
         };
-        put(route('inventory_items.update', inventoryItem.id), {
+        put(route('inventory.update', inventoryItem.id), {
             ...transformedData,
             preserveScroll: true,
             onSuccess: () => { /* Mungkin ada aksi setelah sukses */ },
@@ -54,7 +54,7 @@ export default function Edit({ auth, inventoryItem, flash }: EditProps) {
     return (
         <AppLayout 
             user={auth.user} 
-            header={<h2 className={`font-semibold text-xl ${isDark ? 'text-white' : 'text-gray-800'} leading-tight`}>Edit Inventory Item</h2>}
+            header={<h2 className={`font-semibold text-xl ${isDark ? 'text-white' : 'text-gray-800'} leading-tight`}>Edit Item Inventori</h2>}
         >
             <Head title={`Edit Item - ${inventoryItem.name}`} />
             <div className="py-12">
@@ -74,7 +74,7 @@ export default function Edit({ auth, inventoryItem, flash }: EditProps) {
                                     <label htmlFor="name" className={`block text-sm font-medium ${
                                         isDark ? 'text-gray-300' : 'text-gray-700'
                                     }`}>
-                                        Name
+                                        Nama
                                     </label>
                                     <input
                                         type="text"
@@ -126,7 +126,7 @@ export default function Edit({ auth, inventoryItem, flash }: EditProps) {
                                     <label htmlFor="quantity" className={`block text-sm font-medium ${
                                         isDark ? 'text-gray-300' : 'text-gray-700'
                                     }`}>
-                                        Quantity
+                                        Jumlah
                                     </label>
                                     <input
                                         type="number"
@@ -152,7 +152,7 @@ export default function Edit({ auth, inventoryItem, flash }: EditProps) {
                                     <label htmlFor="unit" className={`block text-sm font-medium ${
                                         isDark ? 'text-gray-300' : 'text-gray-700'
                                     }`}>
-                                        Unit
+                                        Satuan
                                     </label>
                                     <input
                                         type="text"
@@ -178,7 +178,7 @@ export default function Edit({ auth, inventoryItem, flash }: EditProps) {
                                     <label htmlFor="location" className={`block text-sm font-medium ${
                                         isDark ? 'text-gray-300' : 'text-gray-700'
                                     }`}>
-                                        Location
+                                        Lokasi
                                     </label>
                                     <input
                                         type="text"
@@ -204,7 +204,7 @@ export default function Edit({ auth, inventoryItem, flash }: EditProps) {
                                     <label htmlFor="low_stock_threshold" className={`block text-sm font-medium ${
                                         isDark ? 'text-gray-300' : 'text-gray-700'
                                     }`}>
-                                        Low Stock Threshold
+                                        Batas Stok Rendah
                                     </label>
                                     <input
                                         type="number"
@@ -230,7 +230,7 @@ export default function Edit({ auth, inventoryItem, flash }: EditProps) {
                                     <label htmlFor="description" className={`block text-sm font-medium ${
                                         isDark ? 'text-gray-300' : 'text-gray-700'
                                     }`}>
-                                        Description
+                                        Deskripsi
                                     </label>
                                     <textarea
                                         id="description"
@@ -252,27 +252,23 @@ export default function Edit({ auth, inventoryItem, flash }: EditProps) {
                                     )}
                                 </div>
 
-                                <div className="flex items-center justify-end mt-6">
-                                    <Link 
-                                        href={route('inventory.index')} 
-                                        className={`mr-4 px-4 py-2 border rounded-md ${
+                                <div className="flex items-center justify-end gap-4">
+                                    <Link
+                                        href={route('inventory.index')}
+                                        className={`px-4 py-2 border rounded-md ${
                                             isDark 
-                                                ? 'text-gray-300 border-border hover:bg-accent' 
-                                                : 'text-gray-700 border-gray-300 hover:bg-gray-50'
+                                                ? 'border-border text-accent-foreground hover:bg-accent' 
+                                                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                                         }`}
                                     >
-                                        Cancel
+                                        Batal
                                     </Link>
-                                    <button 
-                                        type="submit" 
+                                    <button
+                                        type="submit"
                                         disabled={processing}
-                                        className={`px-4 py-2 rounded-md ${
-                                            isDark 
-                                                ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
-                                                : 'bg-blue-600 text-white hover:bg-blue-700'
-                                        } disabled:opacity-50`}
+                                        className={`px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50`}
                                     >
-                                        {processing ? 'Saving...' : 'Update Item'}
+                                        {processing ? 'Menyimpan...' : 'Simpan'}
                                     </button>
                                 </div>
                             </form>

@@ -1,77 +1,47 @@
-// resources/js/Pages/Inventory/Index.tsx
+// resources/js/Pages/Inventory/Create.tsx
 import React from 'react';
-import { Link, Head, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout'; // <-- Menggunakan AppLayout
-import { PaginatedData, PageProps, User } from '@/types'; // <-- Import tipe
+import { Link, useForm, Head } from '@inertiajs/react';
+import AppLayout from '@/layouts/app-layout';
+import { PageProps } from '@/types';
 import { useAppearance } from '@/hooks/use-appearance';
 
-// Definisikan tipe data spesifik (sesuaikan)
-interface InventoryItemData {
-    id: number;
-    name: string;
-    sku?: string;
-    description?: string;
-    quantity: number | string; // Bisa string dari DB jika decimal
-    unit?: string;
-    location?: string;
-    low_stock_threshold?: number;
-    last_updated_by?: number; // ID user
-    lastUpdater?: User | null; // Relasi (bisa null jika user dihapus/tidak diset)
-}
+interface CreateProps extends PageProps {}
 
-// Definisikan Props
-interface IndexProps extends PageProps {
-    inventoryItems: PaginatedData<InventoryItemData>;
-    filters: { search?: string; show_low_stock?: string }; // show_low_stock bisa jadi 'true'/'1'
-}
-
-export default function Index({ auth, inventoryItems, filters, flash }: IndexProps) {
+export default function Create({ auth, flash }: CreateProps) {
     const { appearance } = useAppearance();
     const isDark = appearance === 'dark' || (appearance === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
-    // State dan Handler Filter
-    const [searchTerm, setSearchTerm] = React.useState(filters.search || '');
-    const [showLowStock, setShowLowStock] = React.useState(!!filters.show_low_stock);
+    const { data, setData, post, processing, errors } = useForm({
+        name: '',
+        sku: '',
+        description: '',
+        quantity: 0,
+        unit: '',
+        location: '',
+        low_stock_threshold: '',
+    });
 
-    const applyFilters = () => {
-         router.get(route('inventory.index'), {
-             search: searchTerm || undefined, // Kirim undefined jika kosong agar bersih
-             show_low_stock: showLowStock ? '1' : undefined,
-         }, { preserveState: true, replace: true, preserveScroll: true });
-    }
-
-    // Debounce search
-    React.useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            if (searchTerm !== (filters.search || '')) {
-                applyFilters();
-            }
-        }, 300);
-        return () => clearTimeout(timeoutId);
-    }, [searchTerm]);
-
-    // Apply filter saat checkbox berubah
-    React.useEffect(() => {
-         if (showLowStock !== !!filters.show_low_stock) {
-             applyFilters();
-         }
-     }, [showLowStock]);
-
-
-    const handleDelete = (itemId: number) => {
-        if (confirm('Are you sure you want to delete this inventory item?')) {
-            router.delete(route('inventory.destroy', itemId), {
-                preserveScroll: true,
-            });
-        }
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const transformedData = {
+            ...data,
+            quantity: parseFloat(String(data.quantity)),
+            low_stock_threshold: data.low_stock_threshold === '' ? null : parseInt(String(data.low_stock_threshold)),
+        };
+        post(route('inventory.store'), {
+            ...transformedData,
+            preserveScroll: true,
+            onSuccess: () => { /* Mungkin ada aksi setelah sukses */ },
+            onError: (errs) => { /* Mungkin ada aksi jika error */ console.error(errs); },
+        });
     };
 
     return (
-        <AppLayout
-            user={auth.user}
-            header={<h2 className={`font-semibold text-xl ${isDark ? 'text-white' : 'text-gray-800'} leading-tight`}>Inventory Management</h2>}
+        <AppLayout 
+            user={auth.user} 
+            header={<h2 className={`font-semibold text-xl ${isDark ? 'text-white' : 'text-gray-800'} leading-tight`}>Tambah Item Inventori</h2>}
         >
-            <Head title="Inventory" />
+            <Head title="Tambah Item Inventori" />
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className={`${isDark ? 'bg-card' : 'bg-white'} overflow-hidden shadow-sm sm:rounded-lg`}>
@@ -84,159 +54,209 @@ export default function Index({ auth, inventoryItems, filters, flash }: IndexPro
                                 </div>
                             )}
 
-                            <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
-                                <div className="flex items-center gap-4 w-full sm:w-auto">
-                                    <input
-                                        type="text"
-                                        placeholder="Search name/sku..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className={`border rounded px-2 py-1 flex-grow sm:flex-grow-0 ${
-                                            isDark 
-                                                ? 'bg-card text-card-foreground border-border' 
-                                                : 'bg-white text-gray-900 border-gray-200'
-                                        }`}
-                                    />
-                                    <label className={`flex items-center whitespace-nowrap ${
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div>
+                                    <label htmlFor="name" className={`block text-sm font-medium ${
                                         isDark ? 'text-gray-300' : 'text-gray-700'
                                     }`}>
-                                        <input
-                                            type="checkbox"
-                                            checked={showLowStock}
-                                            onChange={(e) => setShowLowStock(e.target.checked)}
-                                            className={`rounded mr-2 ${
-                                                isDark ? 'bg-card border-border' : 'bg-white border-gray-200'
-                                            }`}
-                                        />
-                                        Low Stock Only
+                                        Nama
                                     </label>
+                                    <input
+                                        type="text"
+                                        id="name"
+                                        value={data.name}
+                                        onChange={e => setData('name', e.target.value)}
+                                        className={`mt-1 block w-full rounded-md shadow-sm ${
+                                            isDark 
+                                                ? 'bg-card text-card-foreground border-border focus:border-primary focus:ring-primary' 
+                                                : 'bg-white text-gray-900 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
+                                        }`}
+                                    />
+                                    {errors.name && (
+                                        <p className={`mt-2 text-sm ${
+                                            isDark ? 'text-destructive' : 'text-red-600'
+                                        }`}>
+                                            {errors.name}
+                                        </p>
+                                    )}
                                 </div>
 
-                                <Link
-                                    href={route('inventory.create')}
-                                    className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90 w-full sm:w-auto text-center"
-                                >
-                                    Create Item
-                                </Link>
-                            </div>
-
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-border">
-                                    <thead className={isDark ? 'bg-card' : 'bg-gray-50'}>
-                                        <tr>
-                                            <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${
-                                                isDark ? 'text-gray-400' : 'text-gray-500'
-                                            }`}>Name</th>
-                                            <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${
-                                                isDark ? 'text-gray-400' : 'text-gray-500'
-                                            }`}>SKU</th>
-                                            <th className={`px-6 py-3 text-right text-xs font-medium uppercase tracking-wider ${
-                                                isDark ? 'text-gray-400' : 'text-gray-500'
-                                            }`}>Qty</th>
-                                            <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${
-                                                isDark ? 'text-gray-400' : 'text-gray-500'
-                                            }`}>Unit</th>
-                                            <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${
-                                                isDark ? 'text-gray-400' : 'text-gray-500'
-                                            }`}>Location</th>
-                                            <th className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${
-                                                isDark ? 'text-gray-400' : 'text-gray-500'
-                                            }`}>Last Updated By</th>
-                                            <th className={`px-6 py-3 text-right text-xs font-medium uppercase tracking-wider ${
-                                                isDark ? 'text-gray-400' : 'text-gray-500'
-                                            }`}>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className={`divide-y divide-border ${
-                                        isDark ? 'bg-card' : 'bg-white'
+                                <div>
+                                    <label htmlFor="sku" className={`block text-sm font-medium ${
+                                        isDark ? 'text-gray-300' : 'text-gray-700'
                                     }`}>
-                                        {inventoryItems.data.map((item) => (
-                                            <tr key={item.id} className={
-                                                item.low_stock_threshold && parseFloat(String(item.quantity)) <= item.low_stock_threshold 
-                                                    ? isDark ? 'bg-red-900/20' : 'bg-red-50' 
-                                                    : ''
-                                            }>
-                                                <td className={`px-6 py-4 whitespace-nowrap ${
-                                                    isDark ? 'text-gray-300' : 'text-gray-900'
-                                                }`}>{item.name}</td>
-                                                <td className={`px-6 py-4 whitespace-nowrap ${
-                                                    isDark ? 'text-gray-300' : 'text-gray-900'
-                                                }`}>{item.sku ?? '-'}</td>
-                                                <td className={`px-6 py-4 whitespace-nowrap text-right ${
-                                                    isDark ? 'text-gray-300' : 'text-gray-900'
-                                                }`}>{item.quantity}</td>
-                                                <td className={`px-6 py-4 whitespace-nowrap ${
-                                                    isDark ? 'text-gray-300' : 'text-gray-900'
-                                                }`}>{item.unit ?? '-'}</td>
-                                                <td className={`px-6 py-4 whitespace-nowrap ${
-                                                    isDark ? 'text-gray-300' : 'text-gray-900'
-                                                }`}>{item.location ?? '-'}</td>
-                                                <td className={`px-6 py-4 whitespace-nowrap ${
-                                                    isDark ? 'text-gray-300' : 'text-gray-900'
-                                                }`}>{item.lastUpdater?.name ?? 'N/A'}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                    <Link 
-                                                        href={route('inventory.edit', item.id)} 
-                                                        className={`${
-                                                            isDark ? 'text-primary hover:text-primary/90' : 'text-indigo-600 hover:text-indigo-900'
-                                                        } mr-3`}
-                                                    >
-                                                        Edit
-                                                    </Link>
-                                                    <button 
-                                                        onClick={() => handleDelete(item.id)} 
-                                                        className={`${
-                                                            isDark ? 'text-destructive hover:text-destructive/90' : 'text-red-600 hover:text-red-900'
-                                                        }`}
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                        {inventoryItems.data.length === 0 && (
-                                            <tr>
-                                                <td colSpan={7} className={`text-center py-4 ${
-                                                    isDark ? 'text-gray-400' : 'text-gray-500'
-                                                }`}>
-                                                    No inventory items found.
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
+                                        SKU
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="sku"
+                                        value={data.sku}
+                                        onChange={e => setData('sku', e.target.value)}
+                                        className={`mt-1 block w-full rounded-md shadow-sm ${
+                                            isDark 
+                                                ? 'bg-card text-card-foreground border-border focus:border-primary focus:ring-primary' 
+                                                : 'bg-white text-gray-900 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
+                                        }`}
+                                    />
+                                    {errors.sku && (
+                                        <p className={`mt-2 text-sm ${
+                                            isDark ? 'text-destructive' : 'text-red-600'
+                                        }`}>
+                                            {errors.sku}
+                                        </p>
+                                    )}
+                                </div>
 
-                            <div className="mt-4">
-                                {inventoryItems.links.length > 3 && (
-                                    <div className="flex flex-wrap -mb-1">
-                                        {inventoryItems.links.map((link, index) => (
-                                            <Link
-                                                key={index}
-                                                className={`mr-1 mb-1 px-4 py-3 text-sm leading-4 border rounded ${
-                                                    link.url === null 
-                                                        ? `cursor-default ${isDark ? 'text-gray-600' : 'text-gray-400'}`
-                                                        : `${
-                                                            isDark 
-                                                                ? 'hover:bg-accent focus:border-primary focus:text-primary' 
-                                                                : 'hover:bg-white focus:border-indigo-500 focus:text-indigo-500'
-                                                        }`
-                                                } ${
-                                                    link.active 
-                                                        ? isDark 
-                                                            ? 'bg-primary text-primary-foreground' 
-                                                            : 'bg-blue-500 text-white'
-                                                        : ''
-                                                }`}
-                                                href={link.url || '#'}
-                                                preserveScroll
-                                                dangerouslySetInnerHTML={{ __html: link.label }}
-                                                as={link.url === null ? 'span' : 'a'}
-                                            />
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
+                                <div>
+                                    <label htmlFor="quantity" className={`block text-sm font-medium ${
+                                        isDark ? 'text-gray-300' : 'text-gray-700'
+                                    }`}>
+                                        Jumlah
+                                    </label>
+                                    <input
+                                        type="number"
+                                        id="quantity"
+                                        value={data.quantity}
+                                        onChange={e => setData('quantity', Number(e.target.value))}
+                                        className={`mt-1 block w-full rounded-md shadow-sm ${
+                                            isDark 
+                                                ? 'bg-card text-card-foreground border-border focus:border-primary focus:ring-primary' 
+                                                : 'bg-white text-gray-900 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
+                                        }`}
+                                    />
+                                    {errors.quantity && (
+                                        <p className={`mt-2 text-sm ${
+                                            isDark ? 'text-destructive' : 'text-red-600'
+                                        }`}>
+                                            {errors.quantity}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="unit" className={`block text-sm font-medium ${
+                                        isDark ? 'text-gray-300' : 'text-gray-700'
+                                    }`}>
+                                        Satuan
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="unit"
+                                        value={data.unit}
+                                        onChange={e => setData('unit', e.target.value)}
+                                        className={`mt-1 block w-full rounded-md shadow-sm ${
+                                            isDark 
+                                                ? 'bg-card text-card-foreground border-border focus:border-primary focus:ring-primary' 
+                                                : 'bg-white text-gray-900 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
+                                        }`}
+                                    />
+                                    {errors.unit && (
+                                        <p className={`mt-2 text-sm ${
+                                            isDark ? 'text-destructive' : 'text-red-600'
+                                        }`}>
+                                            {errors.unit}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="location" className={`block text-sm font-medium ${
+                                        isDark ? 'text-gray-300' : 'text-gray-700'
+                                    }`}>
+                                        Lokasi
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="location"
+                                        value={data.location}
+                                        onChange={e => setData('location', e.target.value)}
+                                        className={`mt-1 block w-full rounded-md shadow-sm ${
+                                            isDark 
+                                                ? 'bg-card text-card-foreground border-border focus:border-primary focus:ring-primary' 
+                                                : 'bg-white text-gray-900 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
+                                        }`}
+                                    />
+                                    {errors.location && (
+                                        <p className={`mt-2 text-sm ${
+                                            isDark ? 'text-destructive' : 'text-red-600'
+                                        }`}>
+                                            {errors.location}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="low_stock_threshold" className={`block text-sm font-medium ${
+                                        isDark ? 'text-gray-300' : 'text-gray-700'
+                                    }`}>
+                                        Batas Stok Rendah
+                                    </label>
+                                    <input
+                                        type="number"
+                                        id="low_stock_threshold"
+                                        value={data.low_stock_threshold}
+                                        onChange={e => setData('low_stock_threshold', e.target.value)}
+                                        className={`mt-1 block w-full rounded-md shadow-sm ${
+                                            isDark 
+                                                ? 'bg-card text-card-foreground border-border focus:border-primary focus:ring-primary' 
+                                                : 'bg-white text-gray-900 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
+                                        }`}
+                                    />
+                                    {errors.low_stock_threshold && (
+                                        <p className={`mt-2 text-sm ${
+                                            isDark ? 'text-destructive' : 'text-red-600'
+                                        }`}>
+                                            {errors.low_stock_threshold}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="description" className={`block text-sm font-medium ${
+                                        isDark ? 'text-gray-300' : 'text-gray-700'
+                                    }`}>
+                                        Deskripsi
+                                    </label>
+                                    <textarea
+                                        id="description"
+                                        value={data.description}
+                                        onChange={e => setData('description', e.target.value)}
+                                        rows={3}
+                                        className={`mt-1 block w-full rounded-md shadow-sm ${
+                                            isDark 
+                                                ? 'bg-card text-card-foreground border-border focus:border-primary focus:ring-primary' 
+                                                : 'bg-white text-gray-900 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
+                                        }`}
+                                    />
+                                    {errors.description && (
+                                        <p className={`mt-2 text-sm ${
+                                            isDark ? 'text-destructive' : 'text-red-600'
+                                        }`}>
+                                            {errors.description}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="flex items-center justify-end gap-4">
+                                    <Link
+                                        href={route('inventory.index')}
+                                        className={`px-4 py-2 border rounded-md ${
+                                            isDark 
+                                                ? 'border-border text-accent-foreground hover:bg-accent' 
+                                                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                                        }`}
+                                    >
+                                        Batal
+                                    </Link>
+                                    <button
+                                        type="submit"
+                                        disabled={processing}
+                                        className={`px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50`}
+                                    >
+                                        {processing ? 'Menyimpan...' : 'Simpan'}
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

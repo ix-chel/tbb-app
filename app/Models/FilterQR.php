@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\InventoryItem;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class FilterQR extends Model
 {
@@ -44,6 +46,14 @@ class FilterQR extends Model
      * Relasi ke filter
      */
     public function filter(): BelongsTo
+    {
+        return $this->belongsTo(InventoryItem::class, 'filter_id');
+    }
+
+    /**
+     * Relasi ke inventory item
+     */
+    public function inventoryItem(): BelongsTo
     {
         return $this->belongsTo(InventoryItem::class, 'filter_id');
     }
@@ -92,5 +102,21 @@ class FilterQR extends Model
             && $this->expiry_date 
             && $this->expiry_date->isFuture()
             && $this->expiry_date->diffInDays(now()) <= $days;
+    }
+
+    /**
+     * Relasi ke history scan
+     */
+    public function scanHistory(): HasMany
+    {
+        return $this->hasMany(QRScanHistory::class);
+    }
+
+    /**
+     * Relasi ke laporan maintenance
+     */
+    public function maintenanceReports(): HasMany
+    {
+        return $this->hasMany(MaintenanceReport::class);
     }
 } 

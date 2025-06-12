@@ -13,14 +13,15 @@ return new class extends Migration
     {
         Schema::create('filter_qrs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('store_id')->constrained()->onDelete('cascade');
-            $table->foreignId('filter_id')->constrained('inventory_items')->onDelete('cascade');
+            $table->unsignedBigInteger('store_id');
+            $table->unsignedBigInteger('filter_id');
             $table->string('qr_code')->unique();
             $table->enum('status', ['active', 'inactive', 'expired'])->default('active');
             $table->timestamp('last_scan_at')->nullable();
-            $table->timestamp('installation_date')->nullable();
-            $table->timestamp('expiry_date')->nullable();
+            $table->date('installation_date')->nullable();
+            $table->date('expiry_date')->nullable();
             $table->text('notes')->nullable();
+            // Contact fields are added in a separate migration
             $table->timestamps();
         });
     }

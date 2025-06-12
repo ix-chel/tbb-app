@@ -19,9 +19,12 @@ class StoreFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->company() . ' ' . fake()->randomElement(['Branch', 'Outlet', 'Store']), // Nama toko palsu
+            'name' => fake()->company() . ' ' . fake()->randomElement(['Branch', 'Outlet', 'Store']),
             'address' => fake()->address(),
             'phone' => fake()->phoneNumber(),
+            'contact_person' => fake()->name(),
+            'contact_phone' => fake()->phoneNumber(),
+            'contact_email' => fake()->unique()->safeEmail(),
             // Penting: Otomatis buat atau cari Company jika company_id tidak diberikan saat create
             'company_id' => Company::factory(),
         ];

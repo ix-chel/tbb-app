@@ -217,8 +217,8 @@ export default function Index({ qrs, filters }: Props) {
                                                         className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300"
                                                         onClick={() => {
                                                             setIsLoading(true);
-                                                            // Implementasi download QR code
-                                                            setTimeout(() => setIsLoading(false), 1000);
+                                                            window.location.href = route('FilterQR.download', qr.id);
+                                                            setIsLoading(false);
                                                         }}
                                                     >
                                                         <Download className="w-4 h-4" />

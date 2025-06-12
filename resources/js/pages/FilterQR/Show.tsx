@@ -10,28 +10,34 @@ import LoadingOverlay from '@/components/loading-overlay';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 
+interface Store {
+    id: number;
+    name: string;
+    address: string;
+    contact_person: string;
+}
+
+interface Filter {
+    id: number;
+    name: string;
+    type: string;
+}
+
 interface FilterQR {
     id: number;
     qr_code: string;
-    store: {
-        id: number;
-        name: string;
-        address: string;
-        contact_person: string;
-    };
-    filter: {
-        id: number;
-        name: string;
-        type: string;
-    };
+    store_id: number;
+    store?: Store;
+    filter_id: number;
+    filter?: Filter;
     status: string;
     last_scan_at: string | null;
-    installation_date: string;
-    expiry_date: string;
-    notes: string;
-    contact_person: string;
-    contact_phone: string;
-    contact_email: string;
+    installation_date: string | null;
+    expiry_date: string | null;
+    notes: string | null;
+    contact_person?: string;
+    contact_phone?: string;
+    contact_email?: string;
 }
 
 interface Props {
@@ -68,23 +74,72 @@ export default function Show({ qr }: Props) {
                             Informasi lengkap tentang QR Code filter
                         </p>
                     </div>
-                    <Button
-                        variant="outline"
-                        onClick={() => window.history.back()}
-                    >
-                        Kembali
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => window.history.back()}
+                        >
+                            Kembali
+                        </Button>
+                        <Button
+                            variant="default"
+                            onClick={() => window.print()}
+                        >
+                            <Download className="w-4 h-4 mr-2" />
+                            Download QR
+                        </Button>
+                    </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Card className="animate-fade-in">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <Card>
                         <CardHeader>
                             <CardTitle>Informasi QR Code</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-6">
-                                <div className="flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                    <QrCode className="w-32 h-32 text-gray-400" />
+                                <div className="flex flex-col items-center space-y-2">
+                                    <div className="p-4 bg-white rounded-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+                                        <QrCode className="w-32 h-32 text-gray-400" />
+                                    </div>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">ID: {qr.qr_code}</p>
+                                </div>
+
+                                <div>
+                                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Toko/Cabang</h3>
+                                    <div className="mt-1">
+                                        <div className="font-medium text-gray-900 dark:text-white">{qr.store?.name}</div>
+                                        <div className="text-sm text-gray-500 dark:text-gray-400">{qr.store?.address}</div>
+                                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                                            PIC: {qr.store?.contact_person}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Filter</h3>
+                                    <div className="mt-1">
+                                        <div className="font-medium text-gray-900 dark:text-white">{qr.filter?.name}</div>
+                                        <div className="text-sm text-gray-500 dark:text-gray-400">{qr.filter?.type}</div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Kontak</h3>
+                                    <div className="mt-1 space-y-2">
+                                        <div className="flex items-center text-sm">
+                                            <User className="w-4 h-4 mr-2 text-gray-400" />
+                                            {qr.contact_person || '-'}
+                                        </div>
+                                        <div className="flex items-center text-sm">
+                                            <Phone className="w-4 h-4 mr-2 text-gray-400" />
+                                            {qr.contact_phone || '-'}
+                                        </div>
+                                        <div className="flex items-center text-sm">
+                                            <Mail className="w-4 h-4 mr-2 text-gray-400" />
+                                            {qr.contact_email || '-'}
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
@@ -122,66 +177,31 @@ export default function Show({ qr }: Props) {
                                     </div>
                                 </div>
 
-                                <div>
-                                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Toko</h3>
-                                    <div className="mt-1 flex items-center text-sm text-gray-900 dark:text-white">
-                                        <MapPin className="w-4 h-4 mr-2 text-gray-400" />
-                                        {qr.store.name}
-                                    </div>
-                                    <div className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                        {qr.store.address}
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Filter</h3>
-                                    <p className="mt-1 text-sm text-gray-900 dark:text-white">
-                                        {qr.filter.name}
-                                    </p>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                                        {qr.filter.type}
-                                    </p>
-                                </div>
-
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Tanggal Instalasi</h3>
-                                        <div className="mt-1 flex items-center text-sm text-gray-900 dark:text-white">
+                                        <div className="mt-1 flex items-center text-sm">
                                             <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                                            {new Date(qr.installation_date).toLocaleDateString('id-ID')}
+                                            {qr.installation_date
+                                                ? new Date(qr.installation_date).toLocaleDateString('id-ID')
+                                                : '-'}
                                         </div>
                                     </div>
 
                                     <div>
                                         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Tanggal Kadaluarsa</h3>
-                                        <div className="mt-1 flex items-center text-sm text-gray-900 dark:text-white">
+                                        <div className="mt-1 flex items-center text-sm">
                                             <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                                            {new Date(qr.expiry_date).toLocaleDateString('id-ID')}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Kontak</h3>
-                                    <div className="mt-1 space-y-2">
-                                        <div className="flex items-center text-sm text-gray-900 dark:text-white">
-                                            <User className="w-4 h-4 mr-2 text-gray-400" />
-                                            {qr.contact_person || '-'}
-                                        </div>
-                                        <div className="flex items-center text-sm text-gray-900 dark:text-white">
-                                            <Phone className="w-4 h-4 mr-2 text-gray-400" />
-                                            {qr.contact_phone || '-'}
-                                        </div>
-                                        <div className="flex items-center text-sm text-gray-900 dark:text-white">
-                                            <Mail className="w-4 h-4 mr-2 text-gray-400" />
-                                            {qr.contact_email || '-'}
+                                            {qr.expiry_date
+                                                ? new Date(qr.expiry_date).toLocaleDateString('id-ID')
+                                                : '-'}
                                         </div>
                                     </div>
                                 </div>
 
                                 <div>
                                     <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Catatan</h3>
-                                    <div className="mt-1 flex items-start text-sm text-gray-900 dark:text-white">
+                                    <div className="mt-1 flex items-start text-sm">
                                         <FileText className="w-4 h-4 mr-2 text-gray-400 mt-1" />
                                         <p className="whitespace-pre-wrap">{qr.notes || '-'}</p>
                                     </div>
@@ -190,7 +210,7 @@ export default function Show({ qr }: Props) {
                         </CardContent>
                     </Card>
 
-                    <Card className="animate-fade-in">
+                    <Card>
                         <CardHeader>
                             <CardTitle>Perbarui Status</CardTitle>
                         </CardHeader>

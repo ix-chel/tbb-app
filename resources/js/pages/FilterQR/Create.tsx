@@ -20,6 +20,8 @@ interface Store {
     name: string;
     address: string;
     contact_person: string;
+    contact_phone: string;
+    contact_email: string;
 }
 
 interface Filter {
@@ -53,6 +55,24 @@ export default function Create({ stores, filters }: Props) {
         post(route('FilterQR.store'));
     };
 
+    const handleStoreChange = (value: string) => {
+        setData('store_id', value);
+        
+        // Find the selected store
+        const selectedStore = stores.find(store => store.id.toString() === value);
+        
+        // If a store is selected, auto-fill the contact information
+        if (selectedStore) {
+            setData({
+                ...data,
+                store_id: value,
+                contact_person: selectedStore.contact_person || '',
+                contact_phone: selectedStore.contact_phone || '',
+                contact_email: selectedStore.contact_email || ''
+            });
+        }
+    };
+
     const selectedStore = stores.find(store => store.id.toString() === data.store_id);
     const selectedFilter = filters.find(filter => filter.id.toString() === data.filter_id);
 
@@ -83,7 +103,7 @@ export default function Create({ stores, filters }: Props) {
                                         <Label htmlFor="store_id" className="text-sm font-medium">Toko/Cabang</Label>
                                         <Select
                                             value={data.store_id}
-                                            onValueChange={(value) => setData('store_id', value)}
+                                            onValueChange={handleStoreChange}
                                         >
                                             <SelectTrigger className={errors.store_id ? "border-red-500" : ""}>
                                                 <SelectValue placeholder="Pilih Toko" />

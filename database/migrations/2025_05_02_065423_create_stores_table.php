@@ -16,7 +16,11 @@ return new class extends Migration
             $table->string('name');
             $table->text('address')->nullable();
             $table->string('phone')->nullable();
+            $table->string('email')->nullable();
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade'); // Foreign key ke tabel companies
+            $table->enum('status', ['pending', 'verified', 'rejected'])->default('pending');
+            $table->timestamp('verified_at')->nullable();
+            $table->foreignId('verified_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });
     }
