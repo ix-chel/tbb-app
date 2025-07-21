@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\User;
+use App\Models\Store;
 
 class InventoryItemController extends Controller
 {
@@ -22,37 +23,38 @@ class InventoryItemController extends Controller
         $query = InventoryItem::query();
 
         // Filter berdasarkan 'search' jika ada
-        if ($request->filled('search')) { // Sesuaikan dengan nama parameter filter Anda
+        if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->input('search') . '%');
-            // Anda mungkin ingin mencari di kolom lain juga, seperti SKU
-            // $query->orWhere('sku', 'like', '%' . $request->input('search') . '%');
         }
 
         // Filter berdasarkan 'show_low_stock'
-        // Frontend mengirim '1' jika dicentang
         if ($request->input('show_low_stock') === '1') {
-            // Asumsi Anda memiliki 'low_stock_threshold' di model InventoryItem
-            // dan jika null, item tersebut tidak pernah dianggap low stock berdasarkan threshold
             $query->whereNotNull('low_stock_threshold')
                   ->whereColumn('quantity', '<=', 'low_stock_threshold');
         }
 
-        // Filter 'show_out_of_stock' (jika masih relevan)
-        // if ($request->has('show_out_of_stock')) {
-        //     $query->where('quantity', '=', 0);
-        // }
+        // Sorting
+        $sortBy = $request->input('sort_by', 'name');
+        $sortDirection = $request->input('sort_direction', 'asc');
+        $allowedSorts = ['name', 'quantity', 'sku', 'created_at'];
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'name';
+        }
+        if (!in_array(strtolower($sortDirection), ['asc', 'desc'])) {
+            $sortDirection = 'asc';
+        }
+        $query->orderBy($sortBy, $sortDirection);
 
-        $inventoryItems = $query->with('lastUpdater:id,name') // Eager load lastUpdater jika perlu
-                                ->orderBy('name') // Contoh sorting default
+        $inventoryItems = $query->with('lastUpdater:id,name')
                                 ->paginate(12)
-                                ->withQueryString(); // Untuk menjaga parameter filter di URL pagination
+                                ->withQueryString();
 
         // Ambil filter yang aktif untuk dikirim kembali ke frontend
-        $activeFilters = $request->only(['search', 'show_low_stock']);
+        $activeFilters = $request->only(['search', 'show_low_stock', 'sort_by', 'sort_direction']);
 
-        return Inertia::render('inventory/index', [ // Perhatikan casing 'Inventory/Index'
+        return Inertia::render('inventory/index', [
             'inventoryItems' => $inventoryItems,
-            'filters'        => (object) $activeFilters, // Kirim filter sebagai objek
+            'filters'        => (object) $activeFilters,
         ]);
     }
 
@@ -60,9 +62,11 @@ class InventoryItemController extends Controller
     {
         $this->authorize('create', InventoryItem::class);
         $managers = User::role(['super-admin', 'admin', 'technician'])->orderBy('name')->get(['id', 'name']);
+        $stores = Store::orderBy('name')->get(['id', 'name']);
 
         return Inertia::render('inventory/create', [
             'managers' => $managers,
+            'stores' => $stores,
         ]);
     }
 
@@ -100,11 +104,13 @@ class InventoryItemController extends Controller
 
     public function edit(InventoryItem $inventoryItem): InertiaResponse
     {
-        $this->authorize('update', $inventoryItem); // Pastikan user boleh update item ini
+        $this->authorize('update', $inventoryItem);
         $inventoryItem->load('lastUpdater:id,name');
+        $stores = Store::orderBy('name')->get(['id', 'name']);
 
-        return Inertia::render('inventory/edit', [ // Perhatikan casing
+        return Inertia::render('inventory/edit', [
             'inventoryItem' => $inventoryItem,
+            'stores' => $stores,
         ]);
     }
 

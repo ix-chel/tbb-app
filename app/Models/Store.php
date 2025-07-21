@@ -19,16 +19,14 @@ class Store extends Model
         'company_id',
         'status',
         'verified_at',
-        'verified_by'
+        'verified_by',
+        'contact_person',
     ];
 
     protected $casts = [
         'verified_at' => 'datetime',
     ];
 
-    /**
-     * Mendapatkan company yang memiliki store ini.
-     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);

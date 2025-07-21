@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->nullable()->unique();
             $table->string('phone')->nullable();
             $table->text('address')->nullable();
-            $table->string('registration_number')->nullable()->unique(); // Nomor Pendaftaran Perusahaan
+            $table->string('registration_number')->nullable()->unique();
             $table->string('contact_person_name')->nullable();
             $table->string('contact_person_email')->nullable();
             $table->string('contact_person_phone')->nullable();

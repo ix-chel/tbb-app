@@ -38,6 +38,7 @@ interface FilterQR {
     contact_person?: string;
     contact_phone?: string;
     contact_email?: string;
+    qr_path?: string; // Added qr_path to the interface
 }
 
 interface Props {
@@ -61,6 +62,11 @@ export default function Show({ qr }: Props) {
         put(route('FilterQR.update', qr.id));
     };
 
+    // Tambahkan path gambar QR code
+    const qrImagePath = qr.qr_path
+        ? `/storage/${qr.qr_path}`
+        : `/storage/qrcodes/${qr.id}.png`;
+
     return (
         <AppLayout>
             <Head title="Detail QR Code" />
@@ -81,13 +87,12 @@ export default function Show({ qr }: Props) {
                         >
                             Kembali
                         </Button>
-                        <Button
-                            variant="default"
-                            onClick={() => window.print()}
-                        >
-                            <Download className="w-4 h-4 mr-2" />
-                            Download QR
-                        </Button>
+                        <a href={route('FilterQR.download', { filterQR: qr.id })} target="_blank" rel="noopener noreferrer">
+                            <Button variant="default">
+                                <Download className="w-4 h-4 mr-2" />
+                                Download QR
+                            </Button>
+                        </a>
                     </div>
                 </div>
 
@@ -100,7 +105,16 @@ export default function Show({ qr }: Props) {
                             <div className="space-y-6">
                                 <div className="flex flex-col items-center space-y-2">
                                     <div className="p-4 bg-white rounded-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-                                        <QrCode className="w-32 h-32 text-gray-400" />
+                                        {/* Gambar QR code asli */}
+                                        <img
+                                            src={qrImagePath}
+                                            alt={`QR Code ${qr.id}`}
+                                            className="w-32 h-32 object-contain"
+                                            onError={(e) => {
+                                                // fallback jika gambar tidak ditemukan
+                                                (e.target as HTMLImageElement).src = '/images/qr-placeholder.png';
+                                            }}
+                                        />
                                     </div>
                                     <p className="text-xs text-gray-500 dark:text-gray-400">ID: {qr.qr_code}</p>
                                 </div>

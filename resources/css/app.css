@@ -1,6 +1,10 @@
 @import 'tailwindcss';
 
-@custom-variant dark (&:is(.dark *));
+@layer utilities {
+  .dark * {
+    color-scheme: dark;
+  }
+}
 
 @layer base {
     *,
@@ -12,6 +16,11 @@
     }
   body {
     letter-spacing: var(--tracking-normal);
+    font-family: 'Inter', sans-serif;
+    background-color: var(--color-primary);
+    color: var(--color-typography-dark);
+    font-size: 16px;
+    font-weight: 400;
     }
 }
 
@@ -29,7 +38,7 @@
     --popover-foreground:
         oklch(0.28 0.04 260.03);
     --primary:
-        oklch(0.59 0.20 277.12);
+        oklch(0.98 0 247.86);
     --primary-foreground:
         oklch(1.00 0 0);
     --secondary:
@@ -53,9 +62,9 @@
     --input:
         oklch(0.87 0.01 258.34);
     --ring:
-        oklch(0.59 0.20 277.12);
+        oklch(0.62 0.19 259.81);
     --chart-1:
-        oklch(0.59 0.20 277.12);
+        oklch(0.62 0.19 259.81);
     --chart-2:
         oklch(0.51 0.23 276.97);
     --chart-3:
@@ -71,7 +80,7 @@
     --sidebar-foreground:
         oklch(0.28 0.04 260.03);
     --sidebar-primary:
-        oklch(0.59 0.20 277.12);
+        oklch(0.62 0.19 259.81);
     --sidebar-primary-foreground:
         oklch(1.00 0 0);
     --sidebar-accent:
@@ -81,7 +90,7 @@
     --sidebar-border:
         oklch(0.87 0.01 258.34);
     --sidebar-ring:
-        oklch(0.59 0.20 277.12);
+        oklch(0.62 0.19 259.81);
     --font-sans:
         Inter, sans-serif;
     --font-serif:
@@ -122,6 +131,17 @@
         0px 4px 8px -1px hsl(0 0% 0% / 0.25);
     --tracking-normal:
         0em;
+    --color-primary: #FFFFFF;
+    --color-primary-alt: #F3F3F3;
+    --color-primary-dark: #11121E;
+    --color-primary-dark-alt: #1D1D29;
+    --color-secondary-yellow: #FFBC11;
+    --color-secondary-blue: #4578F9;
+    --color-secondary-green: #43B430;
+    --color-secondary-purple: #CB3EFF;
+    --color-typography-light: #FFFFFF;
+    --color-typography-gray: #7B7B7B;
+    --color-typography-dark: #000000;
 }
 
 .dark {
@@ -177,6 +197,11 @@
     --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10);
     --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10);
     --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+    --color-primary: #11121E;
+    --color-primary-alt: #1D1D29;
+    --color-typography-dark: #FFFFFF;
+    background-color: var(--color-primary);
+    color: var(--color-typography-dark);
 }
 
 @layer base {
@@ -211,7 +236,7 @@
     }
 }
 
-@theme inline {
+:root {
     --font-sans: Inter, sans-serif;
     --font-mono: JetBrains Mono, monospace;
     --font-serif: Source Serif 4, serif;
@@ -278,17 +303,17 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    border-color: var(--border);
+    outline-color: color-mix(in srgb, var(--ring) 50%, transparent);
     }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--background);
+    color: var(--foreground);
     }
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
 @layer utilities {
     .animate-fade-in {
         animation: fadeIn 0.3s ease-in-out;
@@ -377,4 +402,33 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+h1 {
+    font-size: 48px;
+    font-weight: 600;
+}
+h2 {
+    font-size: 36px;
+    font-weight: 500;
+}
+h3 {
+    font-size: 20px;
+    font-weight: 500;
+}
+p, span, div, input, select, textarea, button {
+    font-size: 16px;
+    font-weight: 400;
+}
+.small {
+    font-size: 14px;
+}
+.semibold {
+    font-weight: 600;
+}
+.medium {
+    font-weight: 500;
+}
+.regular {
+    font-weight: 400;
 }

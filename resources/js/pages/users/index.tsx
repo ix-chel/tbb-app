@@ -4,6 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 import { PageProps, User } from '@/types';
 import { Plus, Search, Edit, Trash2 } from 'lucide-react';
 import { type BreadcrumbItem } from '@/types';
+import { Inertia } from '@inertiajs/inertia';
 
 interface UserData extends User {
     roles: string[];
@@ -135,7 +136,9 @@ export default function Index({ auth, users, filters, roles, companies }: IndexP
                                             <button
                                                 onClick={() => {
                                                     if (confirm('Apakah Anda yakin ingin menghapus user ini?')) {
-                                                        // Handle delete
+                                                        Inertia.delete(route('users.destroy', user.id), {
+                                                            onSuccess: () => Inertia.reload()
+                                                        });
                                                     }
                                                 }}
                                                 className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
@@ -151,9 +154,19 @@ export default function Index({ auth, users, filters, roles, companies }: IndexP
                 </div>
 
                 {/* Pagination */}
-                {users.links && (
-                    <div className="flex justify-center mt-4">
-                        {/* Implementasi pagination sesuai dengan format links yang diberikan */}
+                {users.links && users.links.length > 1 && (
+                    <div className="flex justify-center mt-4 gap-1 flex-wrap">
+                        {users.links.map((link: any, idx: number) => (
+                            <button
+                                key={idx}
+                                disabled={!link.url}
+                                onClick={() => link.url && Inertia.visit(link.url)}
+                                className={`px-3 py-1 rounded border text-sm font-medium transition
+                                    ${link.active ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-blue-800'}
+                                    ${!link.url ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                dangerouslySetInnerHTML={{ __html: link.label }}
+                            />
+                        ))}
                     </div>
                 )}
             </div>

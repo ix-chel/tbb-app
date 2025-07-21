@@ -20,9 +20,6 @@ class StoreQR extends Model
         'status'
     ];
 
-    /**
-     * Relasi ke store
-     */
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class);

@@ -8,205 +8,186 @@
 
 ## Panduan Super Admin
 
-### 1. Login dan Keamanan
-1. Akses aplikasi melalui browser: `https://your-domain.com`
-2. Login dengan kredensial:
-   - Email: superadmin@tbb.com
-   - Password: [password yang diberikan]
-3. Ganti password setelah login pertama kali
-4. Aktifkan 2FA untuk keamanan tambahan
-
-### 2. Manajemen Admin
-1. Tambah Admin Baru:
-   - Klik menu "Admin Management"
-   - Klik tombol "Add New Admin"
-   - Isi form dengan data lengkap
-   - Set permission level
-   - Klik "Save"
-
-2. Edit Admin:
-   - Cari admin di daftar
-   - Klik icon edit
-   - Update informasi yang diperlukan
-   - Klik "Save"
-
-3. Nonaktifkan Admin:
-   - Cari admin di daftar
-   - Klik icon status
-   - Konfirmasi perubahan
-
-### 3. Manajemen Sistem
-1. Konfigurasi Sistem:
-   - Klik menu "System Settings"
-   - Atur parameter sistem
-   - Set batasan dan aturan
-   - Klik "Save"
-
-2. Backup Database:
-   - Klik menu "System Maintenance"
-   - Pilih "Database Backup"
-   - Set jadwal backup
-   - Klik "Start Backup"
-
-3. Log Sistem:
-   - Klik menu "System Logs"
-   - Lihat aktivitas sistem
-   - Filter berdasarkan jenis
-   - Export log jika diperlukan
-
-### 4. Laporan Master
-1. Laporan Keseluruhan:
-   - Klik menu "Master Reports"
-   - Pilih jenis laporan
+### 1. Dashboard (`/dashboard`)
+1. Akses Dashboard:
+   - Lihat statistik keseluruhan
+   - Monitor performa sistem
+   - Lihat grafik aktivitas
    - Filter berdasarkan periode
-   - Klik "Generate"
 
-2. Analisis Performa:
-   - Lihat dashboard performa
-   - Analisis metrik utama
-   - Export laporan analisis
+### 2. Manajemen Pengguna (`/users`)
+1. Kelola Pengguna:
+   - Tambah pengguna baru
+   - Edit informasi pengguna
+   - Set role dan permission
+   - Nonaktifkan pengguna
+
+### 3. Manajemen Perusahaan (`/companies`)
+1. Kelola Perusahaan:
+   - Tambah perusahaan baru
+   - Edit data perusahaan
+   - Set layanan
+   - Kelola kontrak
+
+### 4. Manajemen Teknisi (`/technician`)
+1. Kelola Teknisi:
+   - Tambah teknisi baru
+   - Edit data teknisi
+   - Set area kerja
+   - Lihat performa
+
+### 5. Laporan Maintenance (`/maintenancereport`)
+1. Kelola Laporan:
+   - Lihat semua laporan
+   - Filter berdasarkan status
+   - Review laporan teknisi
+   - Export laporan
+
+### 6. Manajemen QR Code (`/FilterQR`)
+1. Kelola QR Code:
+   - Generate QR Code baru
+   - Cetak QR Code
+   - Track penggunaan
+   - Update status
+
+### 7. Manajemen Jadwal (`/schedules`)
+1. Kelola Jadwal:
+   - Buat jadwal maintenance
+   - Assign teknisi
+   - Set prioritas
+   - Update status
+
+### 8. Manajemen Inventory (`/inventory`)
+1. Kelola Inventory:
+   - Lihat stok
+   - Update inventory
+   - Track penggunaan
+   - Generate laporan
+
+### 9. Manajemen Store (`/stores`)
+1. Kelola Store:
+   - Tambah store baru
+   - Edit data store
+   - Set lokasi
+   - Kelola maintenance
+
+### 10. Manajemen Feedback (`/feedback`)
+1. Kelola Feedback:
+   - Lihat semua feedback
+   - Filter berdasarkan rating
+   - Analisis feedback
+   - Generate laporan
+
+### 11. Pengaturan Sistem (`/settings`)
+1. Konfigurasi Sistem:
+   - Atur parameter sistem
+   - Set batasan
+   - Konfigurasi email
+   - Backup database
 
 ## Panduan Admin
 
-### 1. Login dan Keamanan
-1. Akses aplikasi melalui browser: `https://your-domain.com`
-2. Login dengan kredensial yang diberikan
-3. Ganti password setelah login pertama kali
-
-### 2. Manajemen Teknisi
-1. Tambah Teknisi:
-   - Klik menu "Technician Management"
-   - Klik "Add New Technician"
-   - Isi data lengkap teknisi
-   - Set area kerja
-   - Klik "Save"
-
-2. Assign Tugas:
-   - Pilih teknisi
-   - Klik "Assign Task"
-   - Pilih lokasi dan jenis tugas
-   - Set deadline
-   - Klik "Save"
-
-### 3. Manajemen Client
-1. Tambah Client:
-   - Klik menu "Client Management"
-   - Klik "Add New Client"
-   - Isi data perusahaan
-   - Set layanan
-   - Klik "Save"
-
-2. Kelola Kontrak:
-   - Pilih client
-   - Klik "Contract Management"
-   - Buat/edit kontrak
-   - Set periode layanan
-   - Klik "Save"
-
-### 4. Manajemen QR Code
-1. Generate QR Code:
-   - Klik menu "QR Codes"
-   - Klik "Generate New"
-   - Pilih lokasi client
-   - Klik "Generate"
-
-2. Cetak QR Code:
-   - Pilih QR Code
-   - Klik "Print"
-   - Pilih format
-   - Klik "Print"
-
-### 5. Laporan
-1. Laporan Teknisi:
-   - Klik menu "Reports"
-   - Pilih "Technician Reports"
+### 1. Dashboard (`/dashboard`)
+1. Monitor Aktivitas:
+   - Lihat statistik maintenance
+   - Monitor performa teknisi
+   - Lihat jadwal maintenance
    - Filter berdasarkan periode
-   - Klik "Generate"
 
-2. Laporan Client:
-   - Pilih "Client Reports"
-   - Filter berdasarkan client
-   - Export dalam format PDF/Excel
+### 2. Manajemen Teknisi (`/technician`)
+1. Kelola Teknisi:
+   - Tambah teknisi baru
+   - Edit data teknisi
+   - Set area kerja
+   - Lihat performa
+
+### 3. Laporan Maintenance (`/maintenancereport`)
+1. Kelola Laporan:
+   - Lihat semua laporan
+   - Filter berdasarkan status
+   - Review laporan teknisi
+   - Export laporan
+
+### 4. Manajemen QR Code (`/FilterQR`)
+1. Kelola QR Code:
+   - Generate QR Code baru
+   - Cetak QR Code
+   - Track penggunaan
+   - Update status
+
+### 5. Manajemen Jadwal (`/schedules`)
+1. Kelola Jadwal:
+   - Buat jadwal maintenance
+   - Assign teknisi
+   - Set prioritas
+   - Update status
+
+### 6. Manajemen Inventory (`/inventory`)
+1. Kelola Inventory:
+   - Lihat stok
+   - Update inventory
+   - Track penggunaan
+   - Generate laporan
 
 ## Panduan Teknisi
 
-### 1. Login dan Keamanan
-1. Akses aplikasi mobile: `https://your-domain.com/mobile`
-2. Login dengan kredensial yang diberikan
-3. Ganti password setelah login pertama kali
+### 1. Dashboard (`/dashboard`)
+1. Lihat Tugas:
+   - Daftar tugas hari ini
+   - Status maintenance
+   - Prioritas tugas
+   - Deadline
 
-### 2. Scan QR Code
-1. Buka Aplikasi:
-   - Buka aplikasi TBB di smartphone
-   - Login dengan kredensial
+### 2. Scan QR Code (`/FilterQR`)
+1. Proses Scan:
+   - Buka scanner
+   - Scan QR Code
+   - Lihat detail lokasi
+   - Mulai maintenance
 
-2. Scan QR Code:
-   - Klik icon scan
-   - Arahkan kamera ke QR Code
-   - Tunggu proses scan selesai
-
-### 3. Input Laporan
-1. Isi Form Maintenance:
-   - Pilih jenis maintenance
-   - Isi detail pekerjaan
-   - Upload foto sebelum/sesudah
-   - Klik "Submit"
-
-2. Update Status:
-   - Pilih tugas
-   - Update status (In Progress/Completed)
+### 3. Input Laporan (`/maintenancereport`)
+1. Buat Laporan:
+   - Isi form maintenance
+   - Upload foto
    - Tambah catatan
-   - Klik "Update"
+   - Submit laporan
 
-### 4. Lihat Tugas
-1. Daftar Tugas:
-   - Buka menu "Tasks"
-   - Lihat tugas yang ditugaskan
-   - Filter berdasarkan status
-
-2. Riwayat Tugas:
-   - Lihat riwayat tugas
-   - Filter berdasarkan periode
-   - Export laporan jika diperlukan
+### 4. Lihat Jadwal (`/schedules`)
+1. Jadwal Kerja:
+   - Lihat jadwal harian
+   - Update status
+   - Lihat detail tugas
+   - Set reminder
 
 ## Panduan Client
 
-### 1. Login dan Keamanan
-1. Akses aplikasi melalui browser: `https://your-domain.com/client`
-2. Login dengan kredensial yang diberikan
-3. Ganti password setelah login pertama kali
+### 1. Dashboard (`/dashboard`)
+1. Monitor Maintenance:
+   - Status maintenance
+   - Jadwal maintenance
+   - Riwayat maintenance
+   - Notifikasi
 
-### 2. Lihat Status Maintenance
-1. Dashboard Client:
-   - Lihat status maintenance
-   - Lihat jadwal maintenance
-   - Lihat riwayat maintenance
-
-2. Detail Maintenance:
-   - Klik maintenance yang dipilih
-   - Lihat detail pekerjaan
-   - Lihat foto dokumentasi
-   - Lihat catatan teknisi
-
-### 3. Request Maintenance
-1. Buat Request:
-   - Klik "New Request"
-   - Pilih jenis maintenance
-   - Isi detail request
-   - Upload foto jika ada
-   - Klik "Submit"
-
-2. Track Request:
-   - Lihat status request
-   - Lihat estimasi waktu
-   - Lihat teknisi yang ditugaskan
-
-### 4. Laporan
-1. Lihat Laporan:
-   - Klik menu "Reports"
-   - Pilih periode
+### 2. Lihat Laporan (`/maintenancereport`)
+1. Akses Laporan:
    - Lihat laporan maintenance
-   - Download PDF/Excel
+   - Filter berdasarkan periode
+   - Download laporan
+   - Lihat dokumentasi
+
+### 3. Berikan Feedback (`/feedback`)
+1. Kirim Feedback:
+   - Isi form feedback
+   - Rate layanan
+   - Tambah komentar
+   - Submit feedback
+
+### 4. Lihat Store (`/stores`)
+1. Informasi Store:
+   - Lihat detail store
+   - Status maintenance
+   - Riwayat maintenance
+   - Kontak teknisi
 
 ## Troubleshooting Umum
 

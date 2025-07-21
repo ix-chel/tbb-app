@@ -26,4 +26,6 @@ return [
         'b' => 255,
         'a' => 0,
     ],
+    // Paksa gunakan GD backend, bukan Imagick
+    'renderer' => SimpleSoftwareIO\QrCode\Renderer\Image\GdImageBackEnd::class,
 ]; 

@@ -20,6 +20,7 @@ interface IndexProps extends PageProps {
 export default function Index({ auth, feedbackItems, filters: initialFilters, feedbackTypes, feedbackStatuses }: IndexProps) {
     const { flash } = usePage<PageProps>().props;
     const { appearance } = useAppearance();
+    const isDark = appearance === 'dark' || (appearance === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
     const [filters, setFilters] = useState({
         search: initialFilters.search || '',
         type: initialFilters.type || '',
@@ -93,7 +94,7 @@ export default function Index({ auth, feedbackItems, filters: initialFilters, fe
                         </div>
                     )}
 
-                    <div className="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
+                    <div className={`${isDark ? 'bg-gray-800' : 'bg-white'} shadow-sm rounded-lg p-6`}>
                         <div className="mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
                             {/* Filter Section */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
@@ -146,7 +147,7 @@ export default function Index({ auth, feedbackItems, filters: initialFilters, fe
                         {/* Tabel Feedback */}
                         <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                <thead className="bg-gray-50 dark:bg-gray-700">
+                                <thead className={`${appearance === 'dark' ? 'bg-card text-card-foreground border-border' : 'bg-white text-gray-900 border-gray-200'}`}>
                                     <tr>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Pengguna</th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Komentar</th>

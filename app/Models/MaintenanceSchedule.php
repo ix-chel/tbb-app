@@ -19,23 +19,22 @@ class MaintenanceSchedule extends Model
         'status',
     ];
 
-    // Tipe data casting untuk tanggal
+   
     protected $casts = [
         'scheduled_at' => 'datetime',
         'completed_at' => 'datetime',
     ];
 
-    // Relasi ke Store
+   
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class);
     }
 
-    // Relasi ke User (Teknisi)
+  
     public function technician(): BelongsTo
     {
-        // Nama relasi 'technician' agar lebih jelas
-        // Foreign key nya tetap 'user_id'
+     
         return $this->belongsTo(User::class, 'user_id');
     }
 

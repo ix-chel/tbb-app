@@ -8,17 +8,19 @@ use App\Models\InventoryItem;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use Endroid\QrCode\Builder\Builder;
-use Endroid\QrCode\Writer\PngWriter;
-use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\QrCode;
 use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\RoundBlockSizeMode;
-use Endroid\QrCode\Color\Color;
+use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\Label\Font\OpenSans;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Color\Color;
 use Endroid\QrCode\Label\LabelAlignment;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 
 class FilterQRController extends Controller
 {
@@ -59,14 +61,14 @@ class FilterQRController extends Controller
         $this->authorize('create', FilterQR::class);
 
         $stores = Store::select([
-            'id',
-            'name',
+            'id', 
+            'name', 
             'address',
             'contact_person',
             'contact_phone',
             'contact_email'
         ])->get();
-
+        
         $filters = InventoryItem::where('type', 'filter')
             ->select('id', 'name', 'type')
             ->get();
@@ -80,6 +82,11 @@ class FilterQRController extends Controller
     /**
      * Menyimpan QR code baru
      */
+    use AuthorizesRequests;
+
+    /**
+     * Menyimpan QR code baru
+     */
     public function store(Request $request)
     {
         $this->authorize('create', FilterQR::class);
@@ -88,7 +95,7 @@ class FilterQRController extends Controller
             'store_id' => 'required|exists:stores,id',
             'filter_id' => [
                 'required',
-                'exists:inventory_items,id',
+                'exists:Inventory_items,id',
                 function ($attribute, $value, $fail) {
                     $item = InventoryItem::find($value);
                     if (!$item || $item->type !== 'filter') {
@@ -104,47 +111,45 @@ class FilterQRController extends Controller
             'contact_email' => 'nullable|email',
         ]);
 
-        // Simpan QR code ke database terlebih dahulu untuk mendapatkan ID
+        // Generate UUID untuk QR code
+        $qrCode = Str::uuid()->toString();
+
+        // Pastikan folder qrcodes ada
+        Storage::makeDirectory('public/qrcodes');
+
+        // Buat QR code menggunakan Builder (versi 6.0.0)
+        $builder = new Builder(
+            writer: new PngWriter(),
+            writerOptions: [],
+            validateResult: false,
+            data: $qrCode,
+            encoding: new Encoding('ISO-8859-1'), // Gunakan ISO-8859-1 untuk kompatibilitas scanner
+            errorCorrectionLevel: ErrorCorrectionLevel::High,
+            size: 300,
+            margin: 10,
+            roundBlockSizeMode: RoundBlockSizeMode::Margin,
+            foregroundColor: new Color(0, 0, 0), // Warna hitam
+            backgroundColor: new Color(255, 255, 255), // Latar belakang putih
+            labelText: 'Filter QR Code',
+            labelFont: new OpenSans(20), // Menggunakan Font class dari Endroid QR Code
+            labelAlignment: LabelAlignment::Center
+        );
+
+        $result = $builder->build();
+
+        // Simpan QR code ke database
         $filterQR = FilterQR::create([
             ...$validated,
-            'qr_code' => '', // Temporary empty string
+            'qr_code' => $qrCode,
             'status' => 'active',
         ]);
 
-        // Update qr_code dengan ID yang sudah di-generate
-        $filterQR->update([
-            'qr_code' => (string) $filterQR->id
-        ]);
-
-        // Pastikan folder qrcodes ada
-        Storage::disk('public')->makeDirectory('qrcodes');
-
-        // Generate QR code menggunakan Builder
-        try {
-            $result = Builder::create()
-                ->writer(new PngWriter())
-                ->data((string) $filterQR->id)
-                ->encoding(new Encoding('ISO-8859-1'))
-                ->errorCorrectionLevel(ErrorCorrectionLevel::High)
-                ->size(300)
-                ->margin(10)
-                ->roundBlockSizeMode(RoundBlockSizeMode::Margin)
-                ->foregroundColor(new Color(0, 0, 0))
-                ->backgroundColor(new Color(255, 255, 255))
-                ->labelText('Filter QR Code')
-                ->labelFont(new OpenSans(20))
-                ->labelAlignment(LabelAlignment::Center)
-                ->build();
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('QR Code generation failed: ' . $e->getMessage());
-            $filterQR->delete();
-            return back()->withErrors(['error' => 'Gagal membuat QR code']);
-        }
-
         // Simpan QR code ke storage
         $path = "qrcodes/{$filterQR->id}.png";
-        if (!Storage::disk('public')->put($path, $result->getString())) {
-            \Illuminate\Support\Facades\Log::error('Failed to save QR code to storage.');
+        $qrCodeString = $result->getString();
+        
+        if (!Storage::put("public/{$path}", $qrCodeString)) {
+            // Jika gagal menyimpan, hapus record dari database
             $filterQR->delete();
             return back()->withErrors(['error' => 'Gagal menyimpan QR code']);
         }
@@ -152,6 +157,7 @@ class FilterQRController extends Controller
         return redirect()->route('FilterQR.index')
             ->with('message', 'QR code berhasil dibuat.');
     }
+
 
     /**
      * Menampilkan detail QR code
@@ -185,9 +191,9 @@ class FilterQRController extends Controller
                 'id' => $filterQR->id,
                 'qr_code' => $filterQR->qr_code,
                 'status' => $filterQR->status,
-                'installation_date' => $filterQR->installation_date ? \Carbon\Carbon::parse($filterQR->installation_date)->toDateString() : null,
-                'expiry_date' => $filterQR->expiry_date ? \Carbon\Carbon::parse($filterQR->expiry_date)->toDateString() : null,
-                'last_scan_at' => $filterQR->last_scan_at ? \Carbon\Carbon::parse($filterQR->last_scan_at)->toDateTimeString() : null,
+                'installation_date' => $filterQR->installation_date ? $filterQR->installation_date->toDateString() : null,
+                'expiry_date' => $filterQR->expiry_date ? $filterQR->expiry_date->toDateString() : null,
+                'last_scan_at' => $filterQR->last_scan_at ? $filterQR->last_scan_at->toDateTimeString() : null,
                 'notes' => $filterQR->notes,
                 'contact_person' => $filterQR->contact_person,
                 'contact_phone' => $filterQR->contact_phone,
@@ -229,7 +235,7 @@ class FilterQRController extends Controller
         $this->authorize('delete', $filterQR);
 
         // Hapus QR image dari storage
-Storage::disk('public')->delete("qrcodes/{$filterQR->id}.png");
+        \Storage::delete("public/qrcodes/{$filterQR->id}.png");
 
         $filterQR->delete();
 
@@ -243,62 +249,19 @@ Storage::disk('public')->delete("qrcodes/{$filterQR->id}.png");
     public function scan(Request $request)
     {
         $validated = $request->validate([
-            'id' => 'required|exists:filter_qrs,id',
+            'qr_code' => 'required|string|exists:filter_qrs,qr_code',
         ]);
 
-        $filterQR = FilterQR::where('id', $validated['id'])
-            ->with([
-                'store' => function ($query) {
-                    $query->select([
-                        'id',
-                        'name',
-                        'address',
-                        'contact_person',
-                        'contact_phone',
-                        'contact_email'
-                    ]);
-                },
-                'filter' => function ($query) {
-                    $query->select([
-                        'id',
-                        'name',
-                        'type'
-                    ]);
-                },
-            ])
-            ->first();
-
+        $filterQR = FilterQR::where('qr_code', $validated['qr_code'])->first();
+        
         if ($filterQR) {
             $filterQR->update([
                 'last_scan_at' => now(),
             ]);
 
-            $data = [
-                'id' => $filterQR->id,
-                'status' => $filterQR->status,
-                'installation_date' => $filterQR->installation_date ? \Carbon\Carbon::parse($filterQR->installation_date)->format('d/m/Y') : null,
-                'expiry_date' => $filterQR->expiry_date ? \Carbon\Carbon::parse($filterQR->expiry_date)->format('d/m/Y') : null,
-                'last_scan_at' => $filterQR->last_scan_at ? \Carbon\Carbon::parse($filterQR->last_scan_at)->format('d/m/Y H:i:s') : null,
-                'notes' => $filterQR->notes,
-                'contact_person' => $filterQR->contact_person,
-                'contact_phone' => $filterQR->contact_phone,
-                'contact_email' => $filterQR->contact_email,
-                'store' => [
-                    'name' => $filterQR->store->name,
-                    'address' => $filterQR->store->address,
-                    'contact_person' => $filterQR->store->contact_person,
-                    'contact_phone' => $filterQR->store->contact_phone,
-                    'contact_email' => $filterQR->store->contact_email,
-                ],
-                'filter' => [
-                    'name' => $filterQR->filter->name,
-                    'type' => $filterQR->filter->type,
-                ],
-            ];
-
             return response()->json([
                 'message' => 'QR code berhasil di-scan',
-                'data' => $data,
+                'data' => $filterQR->load(['store', 'filter']),
             ]);
         }
 
@@ -315,7 +278,7 @@ Storage::disk('public')->delete("qrcodes/{$filterQR->id}.png");
         $this->authorize('view', $filterQR);
 
         $path = "public/qrcodes/{$filterQR->id}.png";
-
+        
         if (!Storage::exists($path)) {
             return response()->json([
                 'message' => 'File QR code tidak ditemukan'
@@ -324,4 +287,4 @@ Storage::disk('public')->delete("qrcodes/{$filterQR->id}.png");
 
         return Storage::download($path, "qr-code-{$filterQR->id}.png");
     }
-}
+} 

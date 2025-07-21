@@ -22,9 +22,37 @@ export default {
           800: '#075985',
           900: '#0c4a6e',
         },
+        primary: {
+          light: '#FFFFFF',
+          dark: '#11121E',
+          DEFAULT: '#F3F3F3',
+        },
+        secondary: {
+          yellow: '#FFBC11',
+          blue: '#4578F9',
+          green: '#43B430',
+          purple: '#CB3EFF',
+        },
+        typography: {
+          light: '#FFFFFF',
+          gray: '#7B7B7B',
+          dark: '#000000',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
+      },
+      fontSize: {
+        '4xl': ['48px', '1.2'],
+        '3xl': ['36px', '1.2'],
+        'xl': ['20px', '1.2'],
+        'base': ['16px', '1.5'],
+        'sm': ['14px', '1.5'],
+      },
+      fontWeight: {
+        semibold: 600,
+        medium: 500,
+        normal: 400,
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',

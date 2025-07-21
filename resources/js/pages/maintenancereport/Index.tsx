@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Link } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
+import AppLayout from '@/layouts/app-layout';
 
 interface MaintenanceReport {
     id: number;
@@ -30,7 +31,7 @@ interface Props {
 
 export default function Index({ reports }: Props) {
     return (
-        <>
+        <AppLayout>
             <Head title="Maintenance Reports" />
             
             <div className="container mx-auto py-6">
@@ -97,6 +98,6 @@ export default function Index({ reports }: Props) {
                     </CardContent>
                 </Card>
             </div>
-        </>
+        </AppLayout>
     );
 } 

@@ -21,20 +21,15 @@ class Company extends Model
         'contact_person_phone',
     ];
 
-    /**
-     * Mendapatkan semua store yang dimiliki company ini.
-     */
     public function stores(): HasMany
     {
         return $this->hasMany(Store::class);
     }
 
-    /**
-     * Mendapatkan semua user (client) yang dimiliki company ini.
-     */
+
     public function users(): HasMany
     {
-        // Asumsi role 'client' terikat pada company
+        
         return $this->hasMany(User::class);
     }
 }

@@ -65,6 +65,7 @@ class StoreController extends Controller
             'address' => 'nullable|string',
             'phone' => 'nullable|string|max:20',
             'company_id' => 'required|exists:companies,id', // Wajib pilih company
+            'contact_person' => 'nullable|string|max:255', // validasi contact_person
         ]);
 
         Store::create($validatedData);
@@ -101,6 +102,7 @@ class StoreController extends Controller
             'address' => 'nullable|string',
             'phone' => 'nullable|string|max:20',
             'company_id' => 'required|exists:companies,id',
+            'contact_person' => 'nullable|string|max:255', // validasi contact_person
         ]);
 
         $store->update($validatedData);

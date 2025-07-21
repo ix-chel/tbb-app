@@ -34,57 +34,42 @@ class FilterQR extends Model
         'expiry_date' => 'datetime',
     ];
 
-    /**
-     * Relasi ke store
-     */
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class);
     }
 
-    /**
-     * Relasi ke filter
-     */
+
     public function filter(): BelongsTo
     {
         return $this->belongsTo(InventoryItem::class, 'filter_id');
     }
 
-    /**
-     * Relasi ke inventory item
-     */
+   
     public function inventoryItem(): BelongsTo
     {
         return $this->belongsTo(InventoryItem::class, 'filter_id');
     }
 
-    /**
-     * Scope untuk QR code yang aktif
-     */
+
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
     }
 
-    /**
-     * Scope untuk QR code yang expired
-     */
+
     public function scopeExpired($query)
     {
         return $query->where('expiry_date', '<', now());
     }
 
-    /**
-     * Cek apakah QR code sudah expired
-     */
+ 
     public function isExpired(): bool
     {
         return $this->expiry_date && $this->expiry_date->isPast();
     }
 
-    /**
-     * Scope untuk QR code yang akan expired dalam 30 hari
-     */
+   
     public function scopeExpiringSoon($query)
     {
         return $query->where('status', 'active')
@@ -93,9 +78,7 @@ class FilterQR extends Model
             ->where('expiry_date', '>', now());
     }
 
-    /**
-     * Cek apakah QR code akan expired dalam X hari
-     */
+   
     public function isExpiringSoon(int $days = 30): bool
     {
         return $this->status === 'active' 
@@ -104,17 +87,13 @@ class FilterQR extends Model
             && $this->expiry_date->diffInDays(now()) <= $days;
     }
 
-    /**
-     * Relasi ke history scan
-     */
+    
     public function scanHistory(): HasMany
     {
         return $this->hasMany(QRScanHistory::class);
     }
 
-    /**
-     * Relasi ke laporan maintenance
-     */
+   
     public function maintenanceReports(): HasMany
     {
         return $this->hasMany(MaintenanceReport::class);

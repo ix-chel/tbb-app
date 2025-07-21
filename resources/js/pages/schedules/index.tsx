@@ -51,6 +51,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function Index({ auth, schedules, filters, stores, technicians, statuses: statusOptions, flash }: IndexProps) {
     const { appearance } = useAppearance();
+    const isDark = appearance === 'dark' || (appearance === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
     // State untuk filter dan pencarian
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [selectedStatus, setSelectedStatus] = useState(filters.status || '');
@@ -145,13 +147,13 @@ export default function Index({ auth, schedules, filters, stores, technicians, s
     return (
         <AppLayout user={auth.user} breadcrumbs={breadcrumbs}> {/* Pastikan user prop dikirim ke AppLayout jika diperlukan */}
             <Head title="Jadwal" />
-            <div className="flex h-full flex-1 flex-col gap-6 p-6 bg-gray-100 dark:bg-gray-900">
+            <div className="flex h-full flex-1 flex-col gap-6 p-6">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Daftar Jadwal</h1>
-                        <p className="text-gray-500 dark:text-gray-400 mt-1">Kelola jadwal perawatan dan pemeliharaan</p>
-                    </div>
+                   <div>
+                    <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Daftar Jadwal</h1>
+                    <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'} mt-1`}>Kelola jadwal perawatan dan pemeliharaan</p>
+                   </div>
                     <Link
                         href={route('schedules.create')}
                         className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition duration-150"
@@ -165,19 +167,27 @@ export default function Index({ auth, schedules, filters, stores, technicians, s
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
+                            <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
                             <input
                                 type="text"
                                 placeholder="Cari berdasarkan nama toko, catatan..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-300"
+                                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+                                    isDark 
+                                        ? 'bg-card text-card-foreground border-border' 
+                                        : 'bg-white text-gray-900 border-gray-200'
+                                }`}
                             />
                         </div>
                          <select
                             value={selectedStatus}
                             onChange={(e) => setSelectedStatus(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-300"
+                            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+                                isDark 
+                                    ? 'bg-card text-card-foreground border-border' 
+                                    : 'bg-white text-gray-900 border-gray-200'
+                            }`}
                         >
                             <option value="">Semua Status</option>
                             {statusOptions.map(status => (
@@ -187,7 +197,11 @@ export default function Index({ auth, schedules, filters, stores, technicians, s
                         <select
                             value={selectedStore}
                             onChange={(e) => setSelectedStore(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-300"
+                            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+                                isDark 
+                                    ? 'bg-card text-card-foreground border-border' 
+                                    : 'bg-white text-gray-900 border-gray-200'
+                            }`}
                         >
                             <option value="">Semua Toko</option>
                             {stores.map(store => (
@@ -197,7 +211,11 @@ export default function Index({ auth, schedules, filters, stores, technicians, s
                          <select
                             value={selectedTechnician}
                             onChange={(e) => setSelectedTechnician(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-300"
+                            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+                                isDark 
+                                    ? 'bg-card text-card-foreground border-border' 
+                                    : 'bg-white text-gray-900 border-gray-200'
+                            }`}
                         >
                             <option value="">Semua Teknisi</option>
                             {technicians.map(tech => (
@@ -213,7 +231,11 @@ export default function Index({ auth, schedules, filters, stores, technicians, s
                                 id="date_from"
                                 value={dateFrom}
                                 onChange={(e) => setDateFrom(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-300"
+                                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+                                    isDark 
+                                        ? 'bg-card text-card-foreground border-border' 
+                                        : 'bg-white text-gray-900 border-gray-200'
+                                }`}
                             />
                         </div>
                         <div className="flex flex-col gap-1">
@@ -223,13 +245,21 @@ export default function Index({ auth, schedules, filters, stores, technicians, s
                                 id="date_to"
                                 value={dateTo}
                                 onChange={(e) => setDateTo(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-300"
+                                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+                                    isDark 
+                                        ? 'bg-card text-card-foreground border-border' 
+                                        : 'bg-white text-gray-900 border-gray-200'
+                                }`}
                             />
                         </div>
                         <select
                             value={`${sortBy}:${sortDirection}`}
                             onChange={handleSortChange}
-                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-300"
+                            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+                                isDark 
+                                    ? 'bg-card text-card-foreground border-border' 
+                                    : 'bg-white text-gray-900 border-gray-200'
+                            }`}
                         >
                             <option value="scheduled_at:desc">Tanggal Terdekat</option>
                             <option value="scheduled_at:asc">Tanggal Terjauh</option>
@@ -245,20 +275,86 @@ export default function Index({ auth, schedules, filters, stores, technicians, s
                 {schedules.data.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {schedules.data.map((schedule) => (
-                            <ScheduleCard
+                            <div
                                 key={schedule.id}
-                                schedule={schedule} // Kirim seluruh objek schedule
-                                onDelete={() => handleDelete(schedule.id)}
-                                formatDate={formatDate}
-                                formatTime={formatTime}
-                            />
+                                className={`rounded-xl shadow-sm border p-6 hover:shadow-md transition-shadow ${
+                                    isDark 
+                                        ? 'bg-card text-card-foreground border-border' 
+                                        : 'bg-white text-gray-900 border-gray-200'
+                                }`}
+                            >
+                                <div className="flex items-start gap-4">
+                                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+                                        isDark ? 'bg-primary/20' : 'bg-blue-100'
+                                    }`}>
+                                        <Calendar className={`w-6 h-6 ${isDark ? 'text-primary' : 'text-blue-600'}`} />
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="flex justify-between items-start">
+                                            <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                                <Link href={route('schedules.show', schedule.id)}>
+                                                    {schedule.store.name}
+                                                </Link>
+                                            </h3>
+                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                schedule.status === 'cancelled'
+                                                    ? isDark ? 'bg-red-900/50 text-red-400' : 'bg-red-100 text-red-800'
+                                                    : schedule.status === 'completed'
+                                                        ? isDark ? 'bg-green-900/50 text-green-400' : 'bg-green-100 text-green-800'
+                                                        : isDark ? 'bg-yellow-900/50 text-yellow-400' : 'bg-yellow-100 text-yellow-800'
+                                            }`}>
+                                                {schedule.status.charAt(0).toUpperCase() + schedule.status.slice(1)}
+                                            </span>
+                                        </div>
+                                        <div className="mt-4 space-y-3">
+                                            <div className="flex items-center gap-2">
+                                                <Clock className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                                                <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                                    {formatDate(schedule.scheduled_at)} {formatTime(schedule.scheduled_at)}
+                                                </span>
+                                            </div>
+                                            {schedule.technician && (
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                                        Teknisi: {schedule.technician.name}
+                                                    </span>
+                                                </div>
+                                            )}
+                                            {schedule.notes && (
+                                                <div className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
+                                                    <AlertCircle className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                                                    <p className="italic line-clamp-2">{schedule.notes}</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex justify-end mt-4 gap-2">
+                                    <Link
+                                        href={route('schedules.edit', schedule.id)}
+                                        className={`text-sm font-medium ${
+                                            isDark ? 'text-primary hover:text-primary/90' : 'text-blue-600 hover:text-blue-700'
+                                        }`}
+                                    >
+                                        Edit
+                                    </Link>
+                                    <button
+                                        onClick={() => handleDelete(schedule.id)}
+                                        className={`text-sm font-medium ${
+                                            isDark ? 'text-destructive hover:text-destructive/90' : 'text-red-600 hover:text-red-700'
+                                        }`}
+                                    >
+                                        Hapus
+                                    </button>
+                                </div>
+                            </div>
                         ))}
                     </div>
                 ) : (
                     <div className="text-center py-10">
-                        <Calendar className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-                        <p className="text-gray-500 dark:text-gray-400 text-lg">Tidak ada jadwal yang ditemukan.</p>
-                        <p className="text-sm text-gray-400 dark:text-gray-500">Coba ubah filter atau kata kunci pencarian Anda.</p>
+                        <Calendar className={`w-16 h-16 ${isDark ? 'text-gray-400' : 'text-gray-500'} mx-auto mb-4`} />
+                        <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Tidak ada jadwal yang ditemukan.</p>
+                        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Coba ubah filter atau kata kunci pencarian Anda.</p>
                     </div>
                 )}
 
@@ -284,104 +380,5 @@ export default function Index({ auth, schedules, filters, stores, technicians, s
                 )}
             </div>
         </AppLayout>
-    );
-}
-
-// Props untuk ScheduleCard
-interface ScheduleCardProps {
-    schedule: ScheduleData;
-    onDelete: () => void;
-    formatDate: (dateString: string) => string;
-    formatTime: (dateString: string) => string;
-}
-
-function ScheduleCard({ schedule, onDelete, formatDate, formatTime }: ScheduleCardProps) {
-    const statusColors: Record<ScheduleData['status'], string> = {
-        pending: 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-100 border-yellow-300 dark:border-yellow-700',
-        completed: 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 border-green-300 dark:border-green-700',
-        cancelled: 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100 border-red-300 dark:border-red-700',
-    };
-
-    const statusIcons: Record<ScheduleData['status'], React.ReactNode> = {
-        pending: <Clock className="w-4 h-4 text-yellow-500 dark:text-yellow-400" />,
-        completed: <CheckCircle2 className="w-4 h-4 text-green-500 dark:text-green-400" />,
-        cancelled: <AlertCircle className="w-4 h-4 text-red-500 dark:text-red-400" />,
-    }
-
-    return (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 hover:shadow-lg transition-shadow duration-200 flex flex-col justify-between">
-            <div>
-                <div className="flex items-start gap-4 mb-3">
-                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${statusColors[schedule.status]} bg-opacity-20`}>
-                        <Calendar className={`w-6 h-6 ${
-                            schedule.status === 'pending' ? 'text-yellow-600 dark:text-yellow-400' :
-                            schedule.status === 'completed' ? 'text-green-600 dark:text-green-400' :
-                            'text-red-600 dark:text-red-400'
-                        }`} />
-                    </div>
-                    <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                            <h3 className="font-semibold text-lg text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                                <Link href={route('schedules.show', schedule.id)}>
-                                    {schedule.store.name}
-                                </Link>
-                            </h3>
-                            <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${statusColors[schedule.status]}`}>
-                                {schedule.status.charAt(0).toUpperCase() + schedule.status.slice(1)}
-                            </span>
-                        </div>
-                        {schedule.technician && (
-                             <p className="text-sm text-gray-500 dark:text-gray-400">Teknisi: {schedule.technician.name}</p>
-                        )}
-                    </div>
-                </div>
-
-                <div className="space-y-2.5 text-sm">
-                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                        <Calendar className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                        <span>{formatDate(schedule.scheduled_at)}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                        <Clock className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                        <span>{formatTime(schedule.scheduled_at)}</span>
-                    </div>
-                    {schedule.notes && (
-                        <div className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
-                            {statusIcons[schedule.status]}
-                            <p className="italic line-clamp-2">{schedule.notes}</p>
-                        </div>
-                    )}
-                     {!schedule.notes && (
-                        <div className="flex items-center gap-2 text-gray-500 dark:text-gray-500">
-                            <AlertCircle className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                            <span className="italic">Tidak ada catatan.</span>
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            <div className="flex justify-end items-center gap-2 mt-5 pt-4 border-t border-gray-100 dark:border-gray-700">
-                <Link
-                    href={route('schedules.edit', schedule.id)} // Pastikan rute ini ada
-                    className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 p-2 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-colors"
-                    title="Edit Jadwal"
-                >
-                    <Edit className="w-4 h-4" />
-                </Link>
-                <button
-                    onClick={onDelete}
-                    className="text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 p-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/50 transition-colors"
-                    title="Hapus Jadwal"
-                >
-                    <Trash2 className="w-4 h-4" />
-                </button>
-                <Link
-                    href={route('schedules.show', schedule.id)} // Pastikan rute ini ada
-                    className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-1 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                >
-                    Lihat Detail <ChevronRight className="w-4 h-4" />
-                </Link>
-            </div>
-        </div>
     );
 }

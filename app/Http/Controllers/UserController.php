@@ -21,7 +21,7 @@ class UserController extends Controller
     {
         $this->authorize('viewAny', User::class);
 
-        $query = User::with(['roles', 'company']);
+        $query = User::with(['roles', 'company'])->latest();
 
         // Filter berdasarkan pencarian
         if ($request->search) {
