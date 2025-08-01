@@ -1,36 +1,22 @@
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Store, Wrench, MessageSquare, Building2, Package, PersonStanding, QrCode, FileText } from 'lucide-react';
+import { Building2, FileText, LayoutGrid, MessageSquare, Package, PersonStanding, QrCode, Store, Wrench } from 'lucide-react';
 import { useMemo } from 'react';
 import AppLogo from './app-logo';
 
 const iconMap: Record<string, any> = {
-    'home': LayoutGrid,
+    home: LayoutGrid,
     'office-building': Building2,
-    'store': Store,
-    'cube': Package,
+    store: Store,
+    cube: Package,
     'wrench-screwdriver': Wrench,
     'chat-bubble-left-right': MessageSquare,
     'qr-code': QrCode,
     'file-text': FileText,
 };
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
 
 const mainNavItems: NavItem[] = [
     {
@@ -87,15 +73,15 @@ interface AppSidebarProps {
 export function AppSidebar({ user }: AppSidebarProps) {
     const { props } = usePage();
     const currentPath = (props?.url as string) || '/';
-    
+
     // Update current state for menu items
     const navItems = useMemo(() => {
-        return mainNavItems.map(item => ({
+        return mainNavItems.map((item) => ({
             ...item,
-            current: currentPath.startsWith(item.href)
+            current: currentPath.startsWith(item.href),
         }));
     }, [currentPath]);
-    
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -115,7 +101,6 @@ export function AppSidebar({ user }: AppSidebarProps) {
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser user={user} />
             </SidebarFooter>
         </Sidebar>

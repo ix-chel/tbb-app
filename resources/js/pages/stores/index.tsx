@@ -114,7 +114,7 @@ export default function Index({ auth, stores, filters, companies, storeStatuses,
     return (
         <AppLayout user={auth.user} breadcrumbs={breadcrumbs}>
             <Head title="Daftar Toko" />
-            <div className="flex h-full flex-1 flex-col gap-6 p-6 bg-gray-100 dark:bg-gray-900">
+            <div className="flex h-full flex-1 flex-col gap-6 p-6">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Daftar Semua Toko</h1>
@@ -177,13 +177,76 @@ export default function Index({ auth, stores, filters, companies, storeStatuses,
                 {stores.data.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {stores.data.map((store) => (
-                            <StoreCard
+                            <div
                                 key={store.id}
-                                store={store}
-                                onDelete={() => handleDelete(store.id, store.name)}
-                                formatDate={formatDate}
-                                isDark={appearance === 'dark' || (appearance === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches)}
-                            />
+                                className={`rounded-xl shadow-sm border p-6 hover:shadow-md transition-shadow ${
+                                    appearance === 'dark' || (appearance === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                                        ? 'bg-card text-card-foreground border-border'
+                                        : 'bg-white text-gray-900 border-gray-200'
+                                }`}
+                            >
+                                <div className="flex items-start gap-4">
+                                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${store.status === 'active' ? 'bg-green-100 dark:bg-green-900/30' : 'bg-gray-100 dark:bg-gray-700/30'}`}>
+                                        <Briefcase className={`w-6 h-6 ${store.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`} />
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="flex justify-between items-start">
+                                            <h3 className={`font-semibold ${appearance === 'dark' || (appearance === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'text-white' : 'text-gray-900'}`}>
+                                                <Link href={route('stores.show', store.id)}>
+                                                    {store.name}
+                                                </Link>
+                                            </h3>
+                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                store.status === 'active'
+                                                    ? appearance === 'dark' || (appearance === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                                                        ? 'bg-green-900/50 text-green-400'
+                                                        : 'bg-green-100 text-green-800'
+                                                    : appearance === 'dark' || (appearance === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                                                        ? 'bg-gray-700/50 text-gray-300'
+                                                        : 'bg-gray-100 text-gray-800'
+                                            }`}>
+                                                {(store.status ?? '-').charAt(0).toUpperCase() + (store.status ?? '-').slice(1)}
+                                            </span>
+                                        </div>
+                                        {store.company && (
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">Perusahaan: {store.company.name}</p>
+                                        )}
+                                        <div className="mt-4 space-y-3">
+                                            {store.address && (
+                                                <div className="flex items-start gap-2">
+                                                    <MapPin className="w-4 h-4 text-gray-400 dark:text-gray-500 mt-0.5 shrink-0" />
+                                                    <span className="text-sm">{store.address}{store.city ? `, ${store.city}` : ''}</span>
+                                                </div>
+                                            )}
+                                            <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
+                                                <span>Dibuat: {formatDate(store.created_at)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex justify-end mt-4 gap-2">
+                                    <Link
+                                        href={route('stores.edit', store.id)}
+                                        className={`text-sm font-medium ${
+                                            appearance === 'dark' || (appearance === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                                                ? 'text-primary hover:text-primary/90'
+                                                : 'text-blue-600 hover:text-blue-700'
+                                        }`}
+                                    >
+                                        Edit
+                                    </Link>
+                                    <button
+                                        onClick={() => handleDelete(store.id, store.name)}
+                                        className={`text-sm font-medium ${
+                                            appearance === 'dark' || (appearance === 'system' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                                                ? 'text-destructive hover:text-destructive/90'
+                                                : 'text-red-600 hover:text-red-700'
+                                        }`}
+                                    >
+                                        Hapus
+                                    </button>
+                                </div>
+                            </div>
                         ))}
                     </div>
                 ) : (
@@ -216,83 +279,5 @@ export default function Index({ auth, stores, filters, companies, storeStatuses,
                 )}
             </div>
         </AppLayout>
-    );
-}
-
-// --- Komponen StoreCard ---
-interface StoreCardProps {
-    store: StoreData;
-    onDelete: () => void;
-    formatDate: (dateString: string) => string;
-    isDark: boolean;
-}
-
-function StoreCard({ store, onDelete, formatDate, isDark }: StoreCardProps) {
-    const statusClasses = {
-        active: 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-400 border-green-300 dark:border-green-700',
-        inactive: 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-600',
-    };
-    const statusIcons = {
-        active: <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400" />,
-        inactive: <XCircle className="w-4 h-4 text-gray-500 dark:text-gray-400" />,
-    };
-
-    return (
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 hover:shadow-lg transition-shadow duration-200 flex flex-col justify-between">
-            <div>
-                <div className="flex items-start gap-4 mb-3">
-                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${store.status === 'active' ? 'bg-green-100 dark:bg-green-900/30' : 'bg-gray-100 dark:bg-gray-700/30'}`}>
-                        <Briefcase className={`w-6 h-6 ${store.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`} />
-                    </div>
-                    <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                            <h3 className="font-semibold text-lg text-gray-800 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                                <Link href={route('stores.show', store.id)}>
-                                    {store.name}
-                                </Link>
-                            </h3>
-                        </div>
-                        {store.company && (
-                            <p className="text-sm text-gray-500 dark:text-gray-400">Perusahaan: {store.company.name}</p>
-                        )}
-                    </div>
-                </div>
-
-                <div className="space-y-2.5 text-sm text-gray-600 dark:text-gray-300">
-                    {store.address && (
-                        <div className="flex items-start gap-2">
-                            <MapPin className="w-4 h-4 text-gray-400 dark:text-gray-500 mt-0.5 shrink-0" />
-                            <span>{store.address}{store.city ? `, ${store.city}` : ''}</span>
-                        </div>
-                    )}
-                    <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
-                        <span>Dibuat: {formatDate(store.created_at)}</span>
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex justify-end items-center gap-2 mt-5 pt-4 border-t border-gray-100 dark:border-gray-700">
-                <Link
-                    href={route('stores.edit', store.id)}
-                    className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 p-2 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-colors"
-                    title="Edit Toko"
-                >
-                    <Edit className="w-4 h-4" />
-                </Link>
-                <button
-                    onClick={onDelete}
-                    className="text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 p-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/50 transition-colors"
-                    title="Hapus Toko"
-                >
-                    <Trash2 className="w-4 h-4" />
-                </button>
-                <Link
-                    href={route('stores.show', store.id)}
-                    className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-1 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                >
-                    Lihat Detail <ChevronRight className="w-4 h-4" />
-                </Link>
-            </div>
-        </div>
     );
 }

@@ -115,7 +115,7 @@ class FilterQRController extends Controller
         $qrCode = Str::uuid()->toString();
 
         // Pastikan folder qrcodes ada
-        Storage::makeDirectory('public/qrcodes');
+        Storage::makeDirectory('/qrcodes');
 
         // Buat QR code menggunakan Builder (versi 6.0.0)
         $builder = new Builder(
@@ -148,7 +148,7 @@ class FilterQRController extends Controller
         $path = "qrcodes/{$filterQR->id}.png";
         $qrCodeString = $result->getString();
         
-        if (!Storage::put("public/{$path}", $qrCodeString)) {
+        if (!Storage::put("{$path}", $qrCodeString)) {
             // Jika gagal menyimpan, hapus record dari database
             $filterQR->delete();
             return back()->withErrors(['error' => 'Gagal menyimpan QR code']);

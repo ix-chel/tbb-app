@@ -46,7 +46,7 @@ class StoreQRController extends Controller
             
         // Save QR code image
         $qrPath = 'qrcodes/' . $qrCode . '.png';
-        Storage::put('public/' . $qrPath, $result->getString());
+        Storage::put('/' . $qrPath, $result->getString());
         
         // Save QR code data
         $storeQR = StoreQR::create([

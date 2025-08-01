@@ -11,29 +11,37 @@ class MaintenanceReport extends Model
     use HasFactory;
 
     protected $fillable = [
-        'filter_qr_id',
-        'user_id',
-        'report_date',
+        'store_id',
+        'technician_id',
+        'equipment_status',
+        'filter_changed',
+        'filter_type',
+        'notes',
+        'photo_paths',
         'status',
-        'description',
-        'action_taken',
-        'next_maintenance_date',
-        'images'
+        'checklist_items',
+        'filter_condition_notes',
+        'photo_path',
+        'admin_notes',
+        'approved_at',
+        'revision_requested_at'
     ];
 
     protected $casts = [
-        'report_date' => 'datetime',
-        'next_maintenance_date' => 'datetime',
-        'images' => 'array'
+        'filter_changed' => 'boolean',
+        'photo_paths' => 'array',
+        'checklist_items' => 'array',
+        'approved_at' => 'datetime',
+        'revision_requested_at' => 'datetime'
     ];
 
-    public function filterQR(): BelongsTo
+    public function store(): BelongsTo
     {
-        return $this->belongsTo(FilterQR::class);
+        return $this->belongsTo(Store::class);
     }
 
-    public function user(): BelongsTo
+    public function technician(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'technician_id');
     }
 } 

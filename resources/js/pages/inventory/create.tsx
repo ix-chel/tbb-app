@@ -7,12 +7,14 @@ import { useAppearance } from '@/hooks/use-appearance';
 
 interface CreateProps extends PageProps {}
 
-export default function Create({ auth, flash }: CreateProps) {
+export default function Create({ auth, flash, stores }: CreateProps) {
     const { appearance } = useAppearance();
     const isDark = appearance === 'dark' || (appearance === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
     const { data, setData, post, processing, errors } = useForm({
         name: '',
+        type: '',
+        store_id: '',
         sku: '',
         description: '',
         quantity: 0,
@@ -78,6 +80,43 @@ export default function Create({ auth, flash }: CreateProps) {
                                         }`}>
                                             {errors.name}
                                         </p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="type" className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Tipe Barang</label>
+                                    <select
+                                        id="type"
+                                        value={data.type}
+                                        onChange={e => setData('type', e.target.value)}
+                                        className={`mt-1 block w-full rounded-md shadow-sm ${isDark ? 'bg-card text-card-foreground border-border focus:border-primary focus:ring-primary' : 'bg-white text-gray-900 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'}`}
+                                    >
+                                        <option value="">Pilih Tipe</option>
+                                        <option value="filter">Filter</option>
+                                        <option value="mesin">Mesin</option>
+                                        <option value="alat">Alat</option>
+                                        <option value="sparepart">Sparepart</option>
+                                    </select>
+                                    {errors.type && (
+                                        <p className={`mt-2 text-sm ${isDark ? 'text-destructive' : 'text-red-600'}`}>{errors.type}</p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="store_id" className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Toko</label>
+                                    <select
+                                        id="store_id"
+                                        value={data.store_id}
+                                        onChange={e => setData('store_id', e.target.value)}
+                                        className={`mt-1 block w-full rounded-md shadow-sm ${isDark ? 'bg-card text-card-foreground border-border focus:border-primary focus:ring-primary' : 'bg-white text-gray-900 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'}`}
+                                    >
+                                        <option value="">Pilih Toko</option>
+                                        {stores && stores.map((store: { id: string; name: string }) => (
+                                            <option key={store.id} value={store.id}>{store.name}</option>
+                                        ))}
+                                    </select>
+                                    {errors.store_id && (
+                                        <p className={`mt-2 text-sm ${isDark ? 'text-destructive' : 'text-red-600'}`}>{errors.store_id}</p>
                                     )}
                                 </div>
 

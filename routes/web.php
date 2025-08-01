@@ -44,7 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         $user = auth()->user();
         \Log::info('User roles:', $user->getRoleNames()->toArray());
         \Log::info('User permissions:', $user->getAllPermissions()->pluck('name')->toArray());
-        
+
         return Inertia::render('dashboard');
     })->name('dashboard');
 
@@ -60,23 +60,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('companies', CompanyController::class);
         Route::resource('stores', StoreController::class);
         Route::resource('users', UserController::class);
-        
+
         // QR Code Routes
         Route::get('/stores/qrcodes', [StoreQRController::class, 'index'])->name('stores.qrcodes.index');
         Route::get('/stores/{store}/qrcodes', function ($store) {
             return Inertia::render('admin/stores/[id]/qr-codes', ['storeId' => $store]);
         })->name('stores.qrcodes.store');
-        
+
         // Filter QR Routes
         Route::get('/FilterQR', [FilterQRController::class, 'index'])->name('FilterQR.index');
         Route::get('/FilterQR/create', [FilterQRController::class, 'create'])->name('FilterQR.create');
         Route::post('/FilterQR', [FilterQRController::class, 'store'])->name('FilterQR.store');
-        Route::get('/FilterQR/{FilterQR}', [FilterQRController::class, 'show'])->name('FilterQR.show');
-        Route::put('/FilterQR/{FilterQR}', [FilterQRController::class, 'update'])->name('FilterQR.update');
-        Route::delete('/FilterQR/{FilterQR}', [FilterQRController::class, 'destroy'])->name('FilterQR.destroy');
-        Route::get('/FilterQR/{FilterQR}/download', [FilterQRController::class, 'download'])->name('FilterQR.download');
-        Route::get('/FilterQR/{FilterQR}/edit', [FilterQRController::class, 'edit'])->name('FilterQR.edit');
-        Route::post('/FilterQR/{FilterQR}/revision', [FilterQRController::class, 'requestRevision'])->name('FilterQR.revision');
+        Route::get('/FilterQR/{filterQR}', [FilterQRController::class, 'show'])->name('FilterQR.show');
+        Route::put('/FilterQR/{filterQR}', [FilterQRController::class, 'update'])->name('FilterQR.update');
+        Route::delete('/FilterQR/{filterQR}', [FilterQRController::class, 'destroy'])->name('FilterQR.destroy');
+        Route::get('/FilterQR/{filterQR}/download', [FilterQRController::class, 'download'])->name('FilterQR.download');
+        Route::get('/FilterQR/{filterQR}/edit', [FilterQRController::class, 'edit'])->name('FilterQR.edit');
+        Route::post('/FilterQR/{filterQR}/revision', [FilterQRController::class, 'requestRevision'])->name('FilterQR.revision');
 
         // Maintenance Report Routes
         Route::get('/maintenancereport', [App\Http\Controllers\MaintenanceController::class, 'index'])->name('maintenance.reports.index');
@@ -102,6 +102,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:super-admin|admin|technician'])->group(function () {
         Route::resource('schedules', MaintenanceScheduleController::class);
         Route::post('/FilterQR/scan', [FilterQRController::class, 'scan'])->name('FilterQR.scan');
+        Route::post('/stores/{store}/maintenancereports', [MaintenanceController::class, 'store'])->name('maintenance.reports.store.by.store');
     });
 
     // Rute untuk super-admin, admin, dan technician
@@ -114,17 +115,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('feedback', FeedbackController::class);
     });
 
-    
+
     // Maintenance routes
 
 });
 
 // Memuat file rute autentikasi (login, register, dll.)
 // Pastikan path ini benar dan file auth.php berisi definisi rute untuk AuthenticatedSessionController, dll.
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 // Memuat file rute settings jika ada
-if (file_exists(__DIR__.'/settings.php')) {
-    require __DIR__.'/settings.php';
+if (file_exists(__DIR__ . '/settings.php')) {
+    require __DIR__ . '/settings.php';
 }
 

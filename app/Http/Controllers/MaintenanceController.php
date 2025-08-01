@@ -52,6 +52,42 @@ class MaintenanceController extends Controller
         return redirect()->route('maintenance.reports.index')
             ->with('message', 'Maintenance report submitted successfully');
     }
+
+    public function store(Request $request, Store $store = null)
+    {
+        $this->authorize('create', MaintenanceReport::class);
+        
+        $validated = $request->validate([
+            'equipment_status' => 'required|in:good,needs_attention,broken',
+            'filter_changed' => 'required|boolean',
+            'filter_type' => 'nullable|string',
+            'notes' => 'nullable|string',
+            'photos.*' => 'nullable|image|max:2048'
+        ]);
+        
+        $photoPaths = [];
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $photo) {
+                $photoPaths[] = $photo->store('maintenance-photos', 'public');
+            }
+        }
+        
+        $report = MaintenanceReport::create([
+            'store_id' => $store ? $store->id : $request->input('store_id'),
+            'technician_id' => auth()->id(),
+            'equipment_status' => $validated['equipment_status'],
+            'filter_changed' => $validated['filter_changed'],
+            'filter_type' => $validated['filter_type'],
+            'notes' => $validated['notes'],
+            'photo_paths' => json_encode($photoPaths),
+            'status' => 'pending'
+        ]);
+        
+        return response()->json([
+            'message' => 'Maintenance report submitted successfully',
+            'report' => $report
+        ]);
+    }
     
     public function index()
     {

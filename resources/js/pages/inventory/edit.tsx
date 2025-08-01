@@ -17,17 +17,22 @@ interface InventoryItemData {
     low_stock_threshold?: number | null; // Bisa null
     last_updated_by?: number;
     lastUpdater?: User | null;
+    type?: string;
+    store_id?: string;
 }
 interface EditProps extends PageProps {
     inventoryItem: InventoryItemData;
+    stores: { id: string; name: string }[];
 }
 
-export default function Edit({ auth, inventoryItem, flash }: EditProps) {
+export default function Edit({ auth, inventoryItem, flash, stores }: EditProps) {
     const { appearance } = useAppearance();
     const isDark = appearance === 'dark' || (appearance === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
     const { data, setData, put, processing, errors } = useForm({
         name: inventoryItem.name || '',
+        type: inventoryItem.type || '',
+        store_id: inventoryItem.store_id || '',
         sku: inventoryItem.sku || '',
         description: inventoryItem.description || '',
         quantity: inventoryItem.quantity ?? 0,
@@ -93,6 +98,43 @@ export default function Edit({ auth, inventoryItem, flash }: EditProps) {
                                         }`}>
                                             {errors.name}
                                         </p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="type" className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Tipe Barang</label>
+                                    <select
+                                        id="type"
+                                        value={data.type}
+                                        onChange={e => setData('type', e.target.value)}
+                                        className={`mt-1 block w-full rounded-md shadow-sm ${isDark ? 'bg-card text-card-foreground border-border focus:border-primary focus:ring-primary' : 'bg-white text-gray-900 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'}`}
+                                    >
+                                        <option value="">Pilih Tipe</option>
+                                        <option value="filter">Filter</option>
+                                        <option value="mesin">Mesin</option>
+                                        <option value="alat">Alat</option>
+                                        <option value="sparepart">Sparepart</option>
+                                    </select>
+                                    {errors.type && (
+                                        <p className={`mt-2 text-sm ${isDark ? 'text-destructive' : 'text-red-600'}`}>{errors.type}</p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="store_id" className={`block text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Toko</label>
+                                    <select
+                                        id="store_id"
+                                        value={data.store_id}
+                                        onChange={e => setData('store_id', e.target.value)}
+                                        className={`mt-1 block w-full rounded-md shadow-sm ${isDark ? 'bg-card text-card-foreground border-border focus:border-primary focus:ring-primary' : 'bg-white text-gray-900 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'}`}
+                                    >
+                                        <option value="">Pilih Toko</option>
+                                        {stores && stores.map(store => (
+                                            <option key={store.id} value={store.id}>{store.name}</option>
+                                        ))}
+                                    </select>
+                                    {errors.store_id && (
+                                        <p className={`mt-2 text-sm ${isDark ? 'text-destructive' : 'text-red-600'}`}>{errors.store_id}</p>
                                     )}
                                 </div>
 

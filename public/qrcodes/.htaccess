@@ -1,0 +1,12 @@
+# Redirect ke storage untuk QR code images
+RewriteEngine On
+RewriteRule ^(.*)\.png$ /storage/qrcodes/$1.png [L,R=301]
+
+# Menolak akses ke file .gitkeep dan README
+<Files ".gitkeep">
+    Require all denied
+</Files>
+
+<Files "README.md">
+    Require all denied
+</Files> 

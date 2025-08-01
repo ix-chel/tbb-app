@@ -35,9 +35,16 @@ export function QRCodeCard({ qr, onToggleStatus, onDownload }: QRCodeCardProps) 
                 <div className="space-y-4">
                     <div className="aspect-square w-full bg-muted rounded-lg flex items-center justify-center">
                         <img 
-                            src={`/storage/${qr.qr_path}`}
+                            src={qr.qr_path ? `/storage/qrcodes/${qr.qr_path}` : `/storage/qrcodes/${qr.id}.png`}
                             alt={`QR Code ${qr.id}`}
                             className="w-48 h-48 object-contain"
+                            onError={(e) => {
+                                // fallback jika gambar tidak ditemukan
+                                (e.target as HTMLImageElement).src = '/storage/qrcodes/placeholder.png';
+                            }}
+                            onLoad={(e) => {
+                                console.log('QR Code loaded successfully:', qr.qr_path ? `/storage/qrcodes/${qr.qr_path}` : `/storage/qrcodes/${qr.id}.png`);
+                            }}
                         />
                     </div>
                     <div className="space-y-2 text-sm">

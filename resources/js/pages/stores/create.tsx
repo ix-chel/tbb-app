@@ -19,6 +19,7 @@ export default function Create({ auth, companies, initial_company_id }: CreatePr
         address: '',
         phone: '',
         company_id: initial_company_id ? String(initial_company_id) : '', // Pastikan string untuk value select
+        contact_person: '', // tambahkan field contact_person
     });
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -49,6 +50,19 @@ export default function Create({ auth, companies, initial_company_id }: CreatePr
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                     />
                                     {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
+                                </div>
+                                <div className="mb-4">
+                                    <label htmlFor="contact_person" className="block text-sm font-medium text-gray-700">
+                                        PIC Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="contact_person"
+                                        value={data.contact_person || ''}
+                                        onChange={(e) => setData('contact_person', e.target.value)}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    />
+                                    {errors.contact_person && <p className="mt-1 text-sm text-red-600">{errors.contact_person}</p>}
                                 </div>
 
                                 {/* Company Selection */}

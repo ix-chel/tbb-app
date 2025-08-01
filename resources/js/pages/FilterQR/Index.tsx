@@ -211,18 +211,9 @@ export default function Index({ qrs, filters }: Props) {
                                                     >
                                                         <Eye className="w-4 h-4" />
                                                     </Link>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-300"
-                                                        onClick={() => {
-                                                            setIsLoading(true);
-                                                            window.location.href = route('FilterQR.download', qr.id);
-                                                            setIsLoading(false);
-                                                        }}
-                                                    >
+                                                    <Link href={route('FilterQR.download', { filterQR: qr.id })} target="_blank" rel="noopener noreferrer">
                                                         <Download className="w-4 h-4" />
-                                                    </Button>
+                                                    </Link>
                                                 </div>
                                             </TableCell>
                                         </TableRow>
