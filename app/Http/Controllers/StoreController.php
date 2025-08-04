@@ -21,26 +21,38 @@ class StoreController extends Controller
     {
         $this->authorize('viewAny', Store::class);
 
-        $stores = Store::with('company') // Eager load company
-            ->when($request->input('search'), function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
-                      ->orWhere('address', 'like', "%{$search}%")
-                      ->orWhereHas('company', fn($q) => $q->where('name', 'like', "%{$search}%"));
+        $user = auth()->user();
+
+        $stores = Store::with('company')
+            // Jika user adalah client, hanya tampilkan store milik company user
+            ->when($user->hasRole('client'), function ($query) use ($user) {
+                $query->where('company_id', $user->company_id);
             })
-             ->when($request->input('company_id'), function ($query, $companyId) {
-                 $query->where('company_id', $companyId);
-             })
+            ->when($request->input('search'), function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('address', 'like', "%{$search}%")
+                    ->orWhereHas('company', fn($q2) => $q2->where('name', 'like', "%{$search}%"));
+                });
+            })
+            ->when($request->input('company_id'), function ($query, $companyId) use ($user) {
+                // Jika client, abaikan filter ini karena sudah fix company_id-nya
+                if (!$user->hasRole('client')) {
+                    $query->where('company_id', $companyId);
+                }
+            })
             ->orderBy('name')
             ->paginate(12)
             ->withQueryString();
 
-        // Ambil daftar company untuk filter dropdown (opsional)
-        $companies = Company::orderBy('name')->get(['id', 'name']);
+        $companies = $user->hasRole('client')
+            ? Company::where('id', $user->company_id)->get(['id', 'name']) // hanya company milik user
+            : Company::orderBy('name')->get(['id', 'name']); // semua company untuk admin
 
         return Inertia::render('stores/index', [
             'stores' => $stores,
             'filters' => $request->only(['search', 'company_id']),
-            'companies' => $companies, // Kirim daftar company ke view
+            'companies' => $companies,
         ]);
     }
 

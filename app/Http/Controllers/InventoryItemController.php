@@ -88,34 +88,37 @@ class InventoryItemController extends Controller
             ->with('message', 'inventory item created.');
     }
 
-    public function show(InventoryItem $inventoryItem): InertiaResponse // Atau RedirectResponse
+    public function show(InventoryItem $inventory): InertiaResponse // Atau RedirectResponse
     {
         // Biasanya tidak ada halaman show terpisah untuk item seperti ini di dashboard
         // Lebih baik redirect ke edit atau index
         // Jika Anda punya policy: $this->authorize('view', $inventoryItem);
         // $inventoryItem->load('lastUpdater:id,name');
         // return Inertia::render('Inventory/Show', ['inventoryItem' => $inventoryItem]);
-        return Redirect::route('inventory.edit', $inventoryItem->id); // Sesuaikan nama route
-    }
-
-    public function edit(InventoryItem $inventoryItem): InertiaResponse
-    {
-        $this->authorize('update', $inventoryItem); // Pastikan user boleh update item ini
-        $inventoryItem->load('lastUpdater:id,name');
-
+        
         return Inertia::render('inventory/edit', [ // Perhatikan casing
-            'inventoryItem' => $inventoryItem,
+            'inventoryItem' => $inventory,
         ]);
     }
 
-    public function update(Request $request, InventoryItem $inventoryItem): RedirectResponse
+    public function edit(InventoryItem $inventory): InertiaResponse
     {
-        $this->authorize('update', $inventoryItem);
+        $this->authorize('update', $inventory); // Pastikan user boleh update item ini
+        $inventory->load('lastUpdater:id,name');
+
+        return Inertia::render('inventory/edit', [ // Perhatikan casing
+            'inventoryItem' => $inventory,
+        ]);
+    }
+
+    public function update(Request $request, InventoryItem $inventory): RedirectResponse
+    {
+        $this->authorize('update', $inventory);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|string|in:filter,mesin,alat,sparepart',
-            'sku' => ['required', 'string', 'max:255', Rule::unique('inventory_items')->ignore($inventoryItem->id)],
+            'sku' => ['required', 'string', 'max:255', Rule::unique('inventory_items')->ignore($inventory->id)],
             'quantity' => 'required|integer|min:0',
             'unit' => 'required|string|max:50',
             'location' => 'nullable|string|max:255',
@@ -132,10 +135,10 @@ class InventoryItemController extends Controller
             ->with('message', 'inventory item updated.');
     }
 
-    public function destroy(InventoryItem $inventoryItem): RedirectResponse
+    public function destroy(InventoryItem $inventory): RedirectResponse
     {
-        $this->authorize('delete', $inventoryItem);
-        $inventoryItem->delete();
+        $this->authorize('delete', $inventory);
+        $inventory->delete();
 
         return Redirect::route('inventory.index')
             ->with('message', 'inventory item deleted.');

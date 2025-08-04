@@ -1,14 +1,76 @@
-import React, { useState, useEffect } from 'react';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout'; // Sesuaikan path jika berbeda
-import { PageProps, FeedbackData, PaginatedData, OptionType } from '@/types'; // Sesuaikan path
-import { pickBy } from 'lodash'; // Anda mungkin perlu menginstal lodash: npm install lodash @types/lodash
 import { useAppearance } from '@/hooks/use-appearance';
+import AppLayout from '@/layouts/app-layout';
+import { FeedbackData, OptionType, PageProps, PaginatedData } from '@/types';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import { pickBy } from 'lodash';
+import React, { useEffect, useState } from 'react';
 
-// Placeholder untuk ikon, ganti dengan library ikon Anda
-const EditIcon = () => <span className="text-blue-500 hover:text-blue-700">✏️</span>;
-const DeleteIcon = () => <span className="text-red-500 hover:text-red-700">🗑️</span>;
-const ViewIcon = () => <span className="text-green-500 hover:text-green-700">👁️</span>;
+// Modern Icon Components with proper props interface
+interface IconProps {
+    className?: string;
+}
+
+const EditIcon: React.FC<IconProps> = ({ className = 'w-5 h-5' }) => (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+        />
+    </svg>
+);
+
+const DeleteIcon: React.FC<IconProps> = ({ className = 'w-5 h-5' }) => (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+        />
+    </svg>
+);
+
+const ViewIcon: React.FC<IconProps> = ({ className = 'w-5 h-5' }) => (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+        />
+    </svg>
+);
+
+const SearchIcon: React.FC<IconProps> = ({ className = 'w-5 h-5' }) => (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+    </svg>
+);
+
+const FilterIcon: React.FC<IconProps> = ({ className = 'w-5 h-5' }) => (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z"
+        />
+    </svg>
+);
+
+const RefreshIcon: React.FC<IconProps> = ({ className = 'w-5 h-5' }) => (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+        />
+    </svg>
+);
 
 interface IndexProps extends PageProps {
     feedbackItems: PaginatedData<FeedbackData>;
@@ -21,6 +83,7 @@ export default function Index({ auth, feedbackItems, filters: initialFilters, fe
     const { flash } = usePage<PageProps>().props;
     const { appearance } = useAppearance();
     const isDark = appearance === 'dark' || (appearance === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
     const [filters, setFilters] = useState({
         search: initialFilters.search || '',
         type: initialFilters.type || '',
@@ -33,9 +96,8 @@ export default function Index({ auth, feedbackItems, filters: initialFilters, fe
     ];
 
     useEffect(() => {
-        // Debounce filter changes
         const handler = setTimeout(() => {
-            const query = pickBy(filters); // Hanya kirim filter yang ada isinya
+            const query = pickBy(filters);
             router.get(route('feedback.index'), query, {
                 preserveState: true,
                 replace: true,
@@ -47,7 +109,7 @@ export default function Index({ auth, feedbackItems, filters: initialFilters, fe
     function handleFilterChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
         const key = e.target.id;
         const value = e.target.value;
-        setFilters(prevFilters => ({
+        setFilters((prevFilters) => ({
             ...prevFilters,
             [key]: value,
         }));
@@ -62,176 +124,334 @@ export default function Index({ auth, feedbackItems, filters: initialFilters, fe
             router.delete(route('feedback.destroy', feedbackId), {
                 preserveScroll: true,
                 onSuccess: () => {
-                    // Bisa tambahkan notifikasi sukses jika flash message tidak cukup
+                    // Success notification handled by flash message
                 },
             });
         }
     }
 
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case 'new':
+            case 'pending':
+                return 'bg-amber-100 text-amber-800 border-amber-200';
+            case 'in_progress':
+                return 'bg-sky-100 text-sky-800 border-sky-200';
+            case 'resolved':
+                return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+            case 'closed':
+                return 'bg-gray-100 text-gray-800 border-gray-200';
+            default:
+                return 'bg-gray-100 text-gray-800 border-gray-200';
+        }
+    };
+
     return (
-        <AppLayout
-            user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Daftar Feedback</h2>}
-            breadcrumbs={breadcrumbs}
-        >
+        <AppLayout user={auth.user} breadcrumbs={breadcrumbs}>
             <Head title="Daftar Feedback" />
 
-            <div className="py-6 md:py-12 bg-gray-100 dark:bg-gray-900">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-50/30" style={{ padding: '0 50px' }}>
+                <div className="w-full py-8">
+                    {/* Flash Messages */}
                     {flash?.success && (
-                        <div className="mb-4 p-4 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-100 border border-green-300 dark:border-green-700 rounded">
-                            {flash.success}
-                        </div>
-                    )}
-                    {flash?.error && (
-                        <div className="mb-4 p-4 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-100 border border-red-300 dark:border-red-700 rounded">
-                            {flash.error}
-                        </div>
-                    )}
-                    {flash?.message && (
-                        <div className="mb-4 p-4 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-100 border border-blue-300 dark:border-blue-700 rounded">
-                            {flash.message}
-                        </div>
-                    )}
-
-                    <div className={`${isDark ? 'bg-gray-800' : 'bg-white'} shadow-sm rounded-lg p-6`}>
-                        <div className="mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
-                            {/* Filter Section */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-                                <input
-                                    type="text"
-                                    id="search"
-                                    value={filters.search}
-                                    onChange={handleFilterChange}
-                                    placeholder="Cari feedback..."
-                                    className="form-input w-full rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
-                                />
-                                <select
-                                    id="type"
-                                    value={filters.type}
-                                    onChange={handleFilterChange}
-                                    className="form-select w-full rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
-                                >
-                                    <option value="">Semua Tipe</option>
-                                    {feedbackTypes.map(type => (
-                                        <option key={type.value} value={type.value}>{type.label}</option>
-                                    ))}
-                                </select>
-                                <select
-                                    id="status"
-                                    value={filters.status}
-                                    onChange={handleFilterChange}
-                                    className="form-select w-full rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
-                                >
-                                    <option value="">Semua Status</option>
-                                    {feedbackStatuses.map(status => (
-                                        <option key={status.value} value={status.value}>{status.label}</option>
-                                    ))}
-                                </select>
-                                <button
-                                    onClick={resetFilters}
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500"
-                                >
-                                    Reset Filter
-                                </button>
-                            </div>
-                            {/* Tombol Tambah hanya jika admin/user yang berhak */}
-                            {/* <Link
-                                href={route('feedback.create')}
-                                className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                            >
-                                Beri Feedback
-                            </Link> */}
-                        </div>
-
-                        {/* Tabel Feedback */}
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                <thead className={`${appearance === 'dark' ? 'bg-card text-card-foreground border-border' : 'bg-white text-gray-900 border-gray-200'}`}>
-                                    <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Pengguna</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Komentar</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tipe</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Toko</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tanggal</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                    {feedbackItems.data.length === 0 && (
-                                        <tr>
-                                            <td colSpan={7} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
-                                                Tidak ada feedback ditemukan.
-                                            </td>
-                                        </tr>
-                                    )}
-                                    {feedbackItems.data.map((item) => (
-                                        <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{item.user?.name || 'N/A'}</td>
-                                            <td className="px-6 py-4 whitespace-normal text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
-                                                {item.comment}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{item.type.replace('_', ' ')}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                    item.status === 'new' || item.status === 'pending' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-100' :
-                                                    item.status === 'in_progress' ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100' :
-                                                    item.status === 'resolved' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100' :
-                                                    item.status === 'closed' ? 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200' : ''
-                                                }`}>
-                                                    {item.status.replace('_', ' ')}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{item.store?.name || 'N/A'}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                {new Date(item.created_at).toLocaleDateString()}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                                <Link href={route('feedback.show', item.id)} title="Lihat Detail" className="text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300">
-                                                    <ViewIcon />
-                                                </Link>
-                                                {/* Asumsi hanya admin atau pemilik yang bisa edit/delete */}
-                                                {/* Anda perlu menambahkan logic otorisasi di sini jika perlu di frontend, meski backend sudah meng-handle */}
-                                                <Link href={route('feedback.edit', item.id)} title="Edit Feedback" className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
-                                                    <EditIcon />
-                                                </Link>
-                                                <button onClick={() => handleDelete(item.id)} title="Hapus Feedback" className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
-                                                    <DeleteIcon />
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        {/* Paginasi */}
-                        <div className="mt-6">
-                            {feedbackItems.links.length > 3 && (
-                                <div className="flex flex-wrap -mb-1">
-                                    {feedbackItems.links.map((link, index) => (
-                                        link.url === null ? (
-                                            <div
-                                                key={index}
-                                                className="mr-1 mb-1 px-4 py-3 text-sm leading-4 text-gray-400 dark:text-gray-600 border rounded"
-                                                dangerouslySetInnerHTML={{ __html: link.label }}
-                                            />
-                                        ) : (
-                                            <Link
-                                                key={index}
-                                                className={`mr-1 mb-1 px-4 py-3 text-sm leading-4 border rounded hover:bg-white dark:hover:bg-gray-700 focus:border-indigo-500 focus:text-indigo-500 dark:focus:border-indigo-700 dark:focus:text-indigo-300 ${
-                                                    link.active ? 'bg-blue-500 text-white dark:bg-blue-600' : 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300'
-                                                }`}
-                                                href={link.url}
-                                                dangerouslySetInnerHTML={{ __html: link.label }}
-                                                preserveScroll
-                                            />
-                                        )
-                                    ))}
+                        <div className="mb-8 rounded-r-xl border-l-4 border-emerald-400 bg-emerald-50 p-6 shadow-sm">
+                            <div className="flex items-center">
+                                <div className="flex-shrink-0">
+                                    <svg className="h-6 w-6 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
                                 </div>
+                                <div className="ml-4">
+                                    <p className="font-medium text-emerald-800">{flash.success}</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {flash?.error && (
+                        <div className="mb-8 rounded-r-xl border-l-4 border-red-400 bg-red-50 p-6 shadow-sm">
+                            <div className="flex items-center">
+                                <div className="flex-shrink-0">
+                                    <svg className="h-6 w-6 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
+                                <div className="ml-4">
+                                    <p className="font-medium text-red-800">{flash.error}</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {flash?.message && (
+                        <div className="mb-8 rounded-r-xl border-l-4 border-sky-400 bg-sky-50 p-6 shadow-sm">
+                            <div className="flex items-center">
+                                <div className="flex-shrink-0">
+                                    <svg className="h-6 w-6 text-sky-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
+                                <div className="ml-4">
+                                    <p className="font-medium text-sky-800">{flash.message}</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Main Content Card */}
+                    <div className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-xl">
+                        {/* Header Section */}
+                        <div className="bg-gradient-to-r from-sky-500 to-sky-600 px-8 py-8">
+                            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+                                <div>
+                                    <h2 className="mb-2 text-2xl font-bold text-white">Manajemen Feedback</h2>
+                                    <p className="text-sky-100">Total {feedbackItems.total} feedback ditemukan</p>
+                                </div>
+                                <div className="flex flex-wrap gap-3">
+                                    <span className="rounded-full bg-white/20 px-4 py-2 text-sm font-medium text-white">
+                                        Halaman {feedbackItems.current_page} dari {feedbackItems.last_page}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Filters Section */}
+                        <div className="border-b border-sky-100 bg-sky-50/50 px-8 py-8">
+                            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+                                {/* Search Input */}
+                                <div className="lg:col-span-4">
+                                    <label className="mb-3 block text-sm font-semibold text-gray-700">
+                                        <SearchIcon className="mr-2 inline h-4 w-4" />
+                                        Pencarian
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            id="search"
+                                            value={filters.search}
+                                            onChange={handleFilterChange}
+                                            placeholder="Cari feedback, pengguna, atau komentar..."
+                                            className="w-full rounded-xl border-2 border-gray-200 px-5 py-4 text-lg placeholder-gray-400 transition-colors duration-200 focus:border-sky-500 focus:ring-0"
+                                        />
+                                        <SearchIcon className="absolute top-1/2 right-4 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
+                                    </div>
+                                </div>
+
+                                {/* Type Filter */}
+                                <div className="lg:col-span-3">
+                                    <label className="mb-3 block text-sm font-semibold text-gray-700">
+                                        <FilterIcon className="mr-2 inline h-4 w-4" />
+                                        Tipe Feedback
+                                    </label>
+                                    <select
+                                        id="type"
+                                        value={filters.type}
+                                        onChange={handleFilterChange}
+                                        className="w-full rounded-xl border-2 border-gray-200 px-5 py-4 text-lg transition-colors duration-200 focus:border-sky-500 focus:ring-0"
+                                    >
+                                        <option value="">Semua Tipe</option>
+                                        {feedbackTypes.map((type) => (
+                                            <option key={type.value} value={type.value}>
+                                                {type.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* Status Filter */}
+                                <div className="lg:col-span-3">
+                                    <label className="mb-3 block text-sm font-semibold text-gray-700">Status</label>
+                                    <select
+                                        id="status"
+                                        value={filters.status}
+                                        onChange={handleFilterChange}
+                                        className="w-full rounded-xl border-2 border-gray-200 px-5 py-4 text-lg transition-colors duration-200 focus:border-sky-500 focus:ring-0"
+                                    >
+                                        <option value="">Semua Status</option>
+                                        {feedbackStatuses.map((status) => (
+                                            <option key={status.value} value={status.value}>
+                                                {status.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* Reset Button */}
+                                <div className="flex items-end lg:col-span-2">
+                                    <button
+                                        onClick={resetFilters}
+                                        className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-sky-200 bg-white px-6 py-4 text-lg font-semibold text-sky-600 transition-all duration-200 hover:border-sky-300 hover:bg-sky-50"
+                                    >
+                                        <RefreshIcon />
+                                        Reset
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Table Section */}
+                        <div className="overflow-x-auto">
+                            {feedbackItems.data.length === 0 ? (
+                                <div className="py-20 text-center">
+                                    <div className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
+                                        <svg className="h-10 w-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={1.5}
+                                                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <h3 className="mb-2 text-xl font-semibold text-gray-900">Tidak ada feedback ditemukan</h3>
+                                    <p className="text-gray-600">Coba ubah filter pencarian atau tambahkan feedback baru.</p>
+                                </div>
+                            ) : (
+                                <table className="w-full">
+                                    <thead className="bg-gray-50/80">
+                                        <tr>
+                                            <th className="px-8 py-6 text-left text-sm font-bold tracking-wider text-gray-700 uppercase">Pengguna</th>
+                                            <th className="px-8 py-6 text-left text-sm font-bold tracking-wider text-gray-700 uppercase">Komentar</th>
+                                            <th className="px-8 py-6 text-left text-sm font-bold tracking-wider text-gray-700 uppercase">Tipe</th>
+                                            <th className="px-8 py-6 text-left text-sm font-bold tracking-wider text-gray-700 uppercase">Status</th>
+                                            <th className="px-8 py-6 text-left text-sm font-bold tracking-wider text-gray-700 uppercase">Toko</th>
+                                            <th className="px-8 py-6 text-left text-sm font-bold tracking-wider text-gray-700 uppercase">Tanggal</th>
+                                            <th className="px-8 py-6 text-left text-sm font-bold tracking-wider text-gray-700 uppercase">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-100 bg-white">
+                                        {feedbackItems.data.map((item, index) => (
+                                            <tr
+                                                key={item.id}
+                                                className={`transition-colors duration-150 hover:bg-sky-50/30 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}
+                                            >
+                                                <td className="px-8 py-6">
+                                                    <div className="flex items-center">
+                                                        <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-sky-100">
+                                                            <span className="text-lg font-bold text-sky-600">
+                                                                {(item.user?.name || 'N').charAt(0).toUpperCase()}
+                                                            </span>
+                                                        </div>
+                                                        <div>
+                                                            <div className="text-lg font-semibold text-gray-900">{item.user?.name || 'N/A'}</div>
+                                                            <div className="text-sm text-gray-500">{item.user?.email || ''}</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-6">
+                                                    <div className="max-w-md">
+                                                        <p className="line-clamp-3 text-base leading-relaxed text-gray-900">{item.comment}</p>
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-6">
+                                                    <span className="rounded-full bg-sky-100 px-4 py-2 text-sm font-medium text-sky-800">
+                                                        {item.type.replace('_', ' ')}
+                                                    </span>
+                                                </td>
+                                                <td className="px-8 py-6">
+                                                    <span
+                                                        className={`rounded-full border px-4 py-2 text-sm font-semibold ${getStatusColor(item.status)}`}
+                                                    >
+                                                        {item.status.replace('_', ' ').toUpperCase()}
+                                                    </span>
+                                                </td>
+                                                <td className="px-8 py-6">
+                                                    <div className="text-lg font-medium text-gray-900">{item.store?.name || 'N/A'}</div>
+                                                </td>
+                                                <td className="px-8 py-6">
+                                                    <div className="text-lg text-gray-900">
+                                                        {new Date(item.created_at).toLocaleDateString('id-ID', {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric',
+                                                        })}
+                                                    </div>
+                                                    <div className="text-sm text-gray-500">
+                                                        {new Date(item.created_at).toLocaleTimeString('id-ID', {
+                                                            hour: '2-digit',
+                                                            minute: '2-digit',
+                                                        })}
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-6">
+                                                    <div className="flex items-center gap-3">
+                                                        <Link
+                                                            href={route('feedback.show', item.id)}
+                                                            title="Lihat Detail"
+                                                            className="rounded-xl bg-emerald-50 p-3 text-emerald-600 transition-all duration-200 hover:bg-emerald-100 hover:text-emerald-700"
+                                                        >
+                                                            <ViewIcon />
+                                                        </Link>
+                                                        <Link
+                                                            href={route('feedback.edit', item.id)}
+                                                            title="Edit Feedback"
+                                                            className="rounded-xl bg-sky-50 p-3 text-sky-600 transition-all duration-200 hover:bg-sky-100 hover:text-sky-700"
+                                                        >
+                                                            <EditIcon />
+                                                        </Link>
+                                                        <button
+                                                            onClick={() => handleDelete(item.id)}
+                                                            title="Hapus Feedback"
+                                                            className="rounded-xl bg-red-50 p-3 text-red-600 transition-all duration-200 hover:bg-red-100 hover:text-red-700"
+                                                        >
+                                                            <DeleteIcon />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             )}
                         </div>
+
+                        {/* Pagination */}
+                        {feedbackItems.links.length > 3 && (
+                            <div className="border-t border-gray-100 bg-gray-50/50 px-8 py-8">
+                                <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
+                                    <div className="text-gray-600">
+                                        Menampilkan <span className="font-semibold">{feedbackItems.from}</span> -{' '}
+                                        <span className="font-semibold">{feedbackItems.to}</span> dari{' '}
+                                        <span className="font-semibold">{feedbackItems.total}</span> hasil
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {feedbackItems.links.map((link, index) =>
+                                            link.url === null ? (
+                                                <div
+                                                    key={index}
+                                                    className="cursor-not-allowed rounded-xl border border-gray-200 bg-gray-100 px-5 py-3 text-gray-400"
+                                                    dangerouslySetInnerHTML={{ __html: link.label }}
+                                                />
+                                            ) : (
+                                                <Link
+                                                    key={index}
+                                                    className={`rounded-xl border px-5 py-3 font-medium transition-all duration-200 ${
+                                                        link.active
+                                                            ? 'border-sky-500 bg-sky-500 text-white shadow-lg'
+                                                            : 'border-gray-200 bg-white text-gray-700 hover:border-sky-300 hover:bg-sky-50 hover:text-sky-600'
+                                                    }`}
+                                                    href={link.url}
+                                                    dangerouslySetInnerHTML={{ __html: link.label }}
+                                                    preserveScroll
+                                                />
+                                            ),
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

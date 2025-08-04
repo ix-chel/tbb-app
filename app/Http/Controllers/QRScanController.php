@@ -48,4 +48,31 @@ class QRScanController extends Controller
             'data' => $scans
         ]);
     }
+
+    public function scanAndRedirect($qrCode)
+{
+    // Temukan QR Code aktif
+    $qr = StoreQR::where('qr_code', $qrCode)
+        ->where('status', 'active')
+        ->first();
+
+    if (!$qr) {
+        return redirect()->route('dashboard')->with('error', 'QR Code tidak ditemukan atau tidak aktif.');
+    }
+
+    // Catat riwayat scan
+    QRScanHistory::create([
+        'store_qr_id' => $qr->id,
+        'user_id' => auth()->id(),
+        'scanned_at' => now(),
+        'notes' => 'QR Code scanned and redirected to maintenance form',
+    ]);
+
+    // Redirect ke halaman create maintenance dengan store_id terisi
+return redirect()->route('maintenance.reports.create', [
+    'store_id' => $qr->store_id
+]);
+
+}
+
 } 

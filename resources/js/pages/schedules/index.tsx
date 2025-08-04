@@ -1,15 +1,31 @@
 // resources/js/Pages/Schedules/Index.tsx
-import React, { useEffect, useState, useCallback } from 'react';
-import { Link, usePage, Head, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout'; // Menggunakan AppLayout
-import { PaginatedData, PageProps, User } from '@/types'; // Import tipe
-import { Calendar, Search, Filter, Plus, Clock, CheckCircle2, AlertCircle, Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
-import { type BreadcrumbItem } from '@/types';
-import { debounce } from 'lodash'; // Anda mungkin perlu menginstal lodash: npm install lodash @types/lodash
 import { useAppearance } from '@/hooks/use-appearance';
+import AppLayout from '@/layouts/app-layout';
+import { PageProps, PaginatedData, User, type BreadcrumbItem } from '@/types';
+import { Head, Link, router } from '@inertiajs/react';
+import { debounce } from 'lodash';
+import {
+    AlertCircle,
+    Building2,
+    Calendar,
+    CheckCircle2,
+    ChevronRight,
+    Clock,
+    Edit,
+    Filter,
+    Plus,
+    Search,
+    Trash2,
+    User as UserIcon,
+    XCircle,
+} from 'lucide-react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 // Definisikan tipe data spesifik (sesuaikan)
-interface StoreSimple { id: number; name: string; }
+interface StoreSimple {
+    id: number;
+    name: string;
+}
 interface ScheduleData {
     id: number;
     store: {
@@ -18,15 +34,14 @@ interface ScheduleData {
     scheduled_at: string;
     status: 'pending' | 'completed' | 'cancelled';
     notes: string | null;
-    // Tambahkan properti lain jika ada, misal technician
     technician?: {
         name: string;
     };
 }
 
 // Definisikan Props menggunakan tipe generik dan PageProps
-interface IndexProps extends PageProps { // Extend PageProps
-    schedules: PaginatedData<ScheduleData>; // Gunakan PaginatedData
+interface IndexProps extends PageProps {
+    schedules: PaginatedData<ScheduleData>;
     filters: {
         search?: string;
         status?: string;
@@ -38,20 +53,19 @@ interface IndexProps extends PageProps { // Extend PageProps
         sort_direction?: string;
     };
     stores: StoreSimple[];
-    technicians: User[]; // Gunakan tipe User
-    statuses: { value: string; label: string; }[]; // Ubah menjadi array objek untuk kemudahan di select
+    technicians: User[];
+    statuses: { value: string; label: string }[];
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Jadwal',
-        href: route('schedules.index'), // Pastikan rute ini ada
+        href: route('schedules.index'),
     },
 ];
 
 export default function Index({ auth, schedules, filters, stores, technicians, statuses: statusOptions, flash }: IndexProps) {
     const { appearance } = useAppearance();
-    const isDark = appearance === 'dark' || (appearance === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
     // State untuk filter dan pencarian
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
@@ -62,6 +76,7 @@ export default function Index({ auth, schedules, filters, stores, technicians, s
     const [dateTo, setDateTo] = useState(filters.date_to || '');
     const [sortBy, setSortBy] = useState(filters.sort_by || 'scheduled_at');
     const [sortDirection, setSortDirection] = useState(filters.sort_direction || 'desc');
+    const [showFilters, setShowFilters] = useState(false);
 
     // Fungsi untuk mengirim parameter filter ke backend
     const applyFilters = useCallback(
@@ -71,8 +86,9 @@ export default function Index({ auth, schedules, filters, stores, technicians, s
                 replace: true,
                 preserveScroll: true,
             });
-        }, 300), // Debounce 300ms
-    []);
+        }, 300),
+        [],
+    );
 
     useEffect(() => {
         const currentParams: Record<string, string | undefined> = {
@@ -85,8 +101,7 @@ export default function Index({ auth, schedules, filters, stores, technicians, s
             sort_by: sortBy,
             sort_direction: sortDirection,
         };
-        // Hapus parameter undefined agar URL lebih bersih
-        Object.keys(currentParams).forEach(key => {
+        Object.keys(currentParams).forEach((key) => {
             if (currentParams[key] === undefined || currentParams[key] === '') {
                 delete currentParams[key];
             }
@@ -94,18 +109,15 @@ export default function Index({ auth, schedules, filters, stores, technicians, s
         applyFilters(currentParams);
     }, [searchTerm, selectedStatus, selectedStore, selectedTechnician, dateFrom, dateTo, sortBy, sortDirection, applyFilters]);
 
-
     const handleDelete = (scheduleId: number) => {
         if (confirm('Apakah Anda yakin ingin menghapus jadwal ini?')) {
             router.delete(route('schedules.destroy', scheduleId), {
                 preserveScroll: true,
                 onSuccess: () => {
-                    // Tambahkan notifikasi jika perlu
                     if (flash && flash.message) {
-                        // Tampilkan flash message (asumsi Anda punya komponen Notifikasi)
-                        // Misalnya: showNotification(flash.message, 'success');
+                        // Tampilkan flash message jika ada
                     }
-                }
+                },
             });
         }
     };
@@ -117,7 +129,7 @@ export default function Index({ auth, schedules, filters, stores, technicians, s
             setSortBy(field);
             setSortDirection(direction);
         } else {
-            setSortBy('scheduled_at'); // Default sort
+            setSortBy('scheduled_at');
             setSortDirection('desc');
         }
     };
@@ -126,258 +138,384 @@ export default function Index({ auth, schedules, filters, stores, technicians, s
     const formatDate = (dateString: string) => {
         try {
             return new Date(dateString).toLocaleDateString('id-ID', {
-                year: 'numeric', month: 'long', day: 'numeric'
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
             });
         } catch (e) {
-            return "Tanggal tidak valid";
+            return 'Tanggal tidak valid';
         }
     };
 
     const formatTime = (dateString: string) => {
-         try {
+        try {
             return new Date(dateString).toLocaleTimeString('id-ID', {
-                hour: '2-digit', minute: '2-digit'
+                hour: '2-digit',
+                minute: '2-digit',
             });
         } catch (e) {
-            return "Waktu tidak valid";
+            return 'Waktu tidak valid';
         }
     };
 
+    const getStatusBadge = (status: string) => {
+        if (status === 'completed') {
+            return (
+                <div className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-gradient-to-r from-emerald-50 to-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-700 transition-all">
+                    <CheckCircle2 className="h-2 w-2" />
+                    Selesai
+                </div>
+            );
+        } else if (status === 'cancelled') {
+            return (
+                <div className="inline-flex items-center gap-1 rounded-full border border-red-200 bg-gradient-to-r from-red-50 to-red-100 px-2 py-1 text-xs font-semibold text-red-700 transition-all">
+                    <XCircle className="h-2 w-2" />
+                    Dibatalkan
+                </div>
+            );
+        } else {
+            return (
+                <div className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-gradient-to-r from-amber-50 to-amber-100 px-2 py-1 text-xs font-semibold text-amber-700 transition-all">
+                    <Clock className="h-2 w-2" />
+                    Menunggu
+                </div>
+            );
+        }
+    };
 
     return (
-        <AppLayout user={auth.user} breadcrumbs={breadcrumbs}> {/* Pastikan user prop dikirim ke AppLayout jika diperlukan */}
+        <AppLayout user={auth.user} breadcrumbs={breadcrumbs}>
             <Head title="Jadwal" />
-            <div className="flex h-full flex-1 flex-col gap-6 p-6">
-                {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                   <div>
-                    <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Daftar Jadwal</h1>
-                    <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'} mt-1`}>Kelola jadwal perawatan dan pemeliharaan</p>
-                   </div>
-                    <Link
-                        href={route('schedules.create')}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition duration-150"
-                    >
-                        <Plus className="w-5 h-5" />
-                        <span>Tambah Jadwal</span>
-                    </Link>
-                </div>
-
-                {/* Filter dan Pencarian */}
-                <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div className="relative">
-                            <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
-                            <input
-                                type="text"
-                                placeholder="Cari berdasarkan nama toko, catatan..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-                                    isDark 
-                                        ? 'bg-card text-card-foreground border-border' 
-                                        : 'bg-white text-gray-900 border-gray-200'
-                                }`}
-                            />
-                        </div>
-                         <select
-                            value={selectedStatus}
-                            onChange={(e) => setSelectedStatus(e.target.value)}
-                            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-                                isDark 
-                                    ? 'bg-card text-card-foreground border-border' 
-                                    : 'bg-white text-gray-900 border-gray-200'
-                            }`}
-                        >
-                            <option value="">Semua Status</option>
-                            {statusOptions.map(status => (
-                                <option key={status.value} value={status.value}>{status.label}</option>
-                            ))}
-                        </select>
-                        <select
-                            value={selectedStore}
-                            onChange={(e) => setSelectedStore(e.target.value)}
-                            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-                                isDark 
-                                    ? 'bg-card text-card-foreground border-border' 
-                                    : 'bg-white text-gray-900 border-gray-200'
-                            }`}
-                        >
-                            <option value="">Semua Toko</option>
-                            {stores.map(store => (
-                                <option key={store.id} value={store.id.toString()}>{store.name}</option>
-                            ))}
-                        </select>
-                         <select
-                            value={selectedTechnician}
-                            onChange={(e) => setSelectedTechnician(e.target.value)}
-                            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-                                isDark 
-                                    ? 'bg-card text-card-foreground border-border' 
-                                    : 'bg-white text-gray-900 border-gray-200'
-                            }`}
-                        >
-                            <option value="">Semua Teknisi</option>
-                            {technicians.map(tech => (
-                                <option key={tech.id} value={tech.id.toString()}>{tech.name}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                         <div className="flex flex-col gap-1">
-                            <label htmlFor="date_from" className="text-sm font-medium text-gray-700 dark:text-gray-300">Dari Tanggal</label>
-                            <input
-                                type="date"
-                                id="date_from"
-                                value={dateFrom}
-                                onChange={(e) => setDateFrom(e.target.value)}
-                                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-                                    isDark 
-                                        ? 'bg-card text-card-foreground border-border' 
-                                        : 'bg-white text-gray-900 border-gray-200'
-                                }`}
-                            />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <label htmlFor="date_to" className="text-sm font-medium text-gray-700 dark:text-gray-300">Sampai Tanggal</label>
-                            <input
-                                type="date"
-                                id="date_to"
-                                value={dateTo}
-                                onChange={(e) => setDateTo(e.target.value)}
-                                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-                                    isDark 
-                                        ? 'bg-card text-card-foreground border-border' 
-                                        : 'bg-white text-gray-900 border-gray-200'
-                                }`}
-                            />
-                        </div>
-                        <select
-                            value={`${sortBy}:${sortDirection}`}
-                            onChange={handleSortChange}
-                            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-                                isDark 
-                                    ? 'bg-card text-card-foreground border-border' 
-                                    : 'bg-white text-gray-900 border-gray-200'
-                            }`}
-                        >
-                            <option value="scheduled_at:desc">Tanggal Terdekat</option>
-                            <option value="scheduled_at:asc">Tanggal Terjauh</option>
-                            <option value="status:asc">Status (A-Z)</option>
-                            <option value="status:desc">Status (Z-A)</option>
-                            <option value="store.name:asc">Toko (A-Z)</option> {/* Pastikan backend mendukung sort by store.name */}
-                            <option value="store.name:desc">Toko (Z-A)</option>
-                        </select>
-                    </div>
-                </div>
-
-                {/* Daftar Jadwal */}
-                {schedules.data.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {schedules.data.map((schedule) => (
-                            <div
-                                key={schedule.id}
-                                className={`rounded-xl shadow-sm border p-6 hover:shadow-md transition-shadow ${
-                                    isDark 
-                                        ? 'bg-card text-card-foreground border-border' 
-                                        : 'bg-white text-gray-900 border-gray-200'
-                                }`}
-                            >
-                                <div className="flex items-start gap-4">
-                                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                                        isDark ? 'bg-primary/20' : 'bg-blue-100'
-                                    }`}>
-                                        <Calendar className={`w-6 h-6 ${isDark ? 'text-primary' : 'text-blue-600'}`} />
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className="flex justify-between items-start">
-                                            <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                                <Link href={route('schedules.show', schedule.id)}>
-                                                    {schedule.store.name}
-                                                </Link>
-                                            </h3>
-                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                schedule.status === 'cancelled'
-                                                    ? isDark ? 'bg-red-900/50 text-red-400' : 'bg-red-100 text-red-800'
-                                                    : schedule.status === 'completed'
-                                                        ? isDark ? 'bg-green-900/50 text-green-400' : 'bg-green-100 text-green-800'
-                                                        : isDark ? 'bg-yellow-900/50 text-yellow-400' : 'bg-yellow-100 text-yellow-800'
-                                            }`}>
-                                                {schedule.status.charAt(0).toUpperCase() + schedule.status.slice(1)}
-                                            </span>
-                                        </div>
-                                        <div className="mt-4 space-y-3">
-                                            <div className="flex items-center gap-2">
-                                                <Clock className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                                                <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                                    {formatDate(schedule.scheduled_at)} {formatTime(schedule.scheduled_at)}
-                                                </span>
-                                            </div>
-                                            {schedule.technician && (
-                                                <div className="flex items-center gap-2">
-                                                    <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                                        Teknisi: {schedule.technician.name}
-                                                    </span>
-                                                </div>
-                                            )}
-                                            {schedule.notes && (
-                                                <div className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
-                                                    <AlertCircle className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                                                    <p className="italic line-clamp-2">{schedule.notes}</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
+            <div className="min-h-screen bg-gradient-to-br from-sky-50/30 via-white to-blue-50/30">
+                {/* Hero Header Section */}
+                <div className="w-full px-0 py-8">
+                    <div className="flex w-full flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-5">
+                                <div className="ml-2 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 shadow-lg">
+                                    <Calendar className="h-6 w-6 text-white" />
                                 </div>
-                                <div className="flex justify-end mt-4 gap-2">
-                                    <Link
-                                        href={route('schedules.edit', schedule.id)}
-                                        className={`text-sm font-medium ${
-                                            isDark ? 'text-primary hover:text-primary/90' : 'text-blue-600 hover:text-blue-700'
-                                        }`}
-                                    >
-                                        Edit
-                                    </Link>
-                                    <button
-                                        onClick={() => handleDelete(schedule.id)}
-                                        className={`text-sm font-medium ${
-                                            isDark ? 'text-destructive hover:text-destructive/90' : 'text-red-600 hover:text-red-700'
-                                        }`}
-                                    >
-                                        Hapus
-                                    </button>
+                                <div>
+                                    <h1 className="bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-3xl font-bold text-transparent lg:text-4xl">
+                                        Manajemen Jadwal
+                                    </h1>
+                                    <p className="text-lg text-slate-600">Kelola jadwal perawatan dan pemeliharaan dengan mudah</p>
                                 </div>
                             </div>
-                        ))}
+                        </div>
+                        <Link
+                            href={route('schedules.create')}
+                            className="group flex transform items-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-sky-600 hover:to-blue-700 hover:shadow-xl"
+                        >
+                            <Plus className="h-6 w-6 transition-transform duration-200 group-hover:rotate-90" />
+                            <span>Tambah Jadwal Baru</span>
+                        </Link>
                     </div>
-                ) : (
-                    <div className="text-center py-10">
-                        <Calendar className={`w-16 h-16 ${isDark ? 'text-gray-400' : 'text-gray-500'} mx-auto mb-4`} />
-                        <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Tidak ada jadwal yang ditemukan.</p>
-                        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Coba ubah filter atau kata kunci pencarian Anda.</p>
-                    </div>
-                )}
+                </div>
 
+                {/* Main Content */}
+                <div className="w-full px-0 py-6">
+                    <div className="w-full space-y-6">
+                        {/* Advanced Search & Filter Section */}
+                        <div className="w-full overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm">
+                            <div className="space-y-6 p-8">
+                                {/* Search Bar */}
+                                <div className="relative">
+                                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                                        <Search className="h-6 w-6 text-sky-400" />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="Cari berdasarkan nama toko, catatan, atau teknisi..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="block w-full rounded-xl border-2 border-sky-100 bg-gradient-to-r from-sky-50/50 to-blue-50/50 py-5 pr-4 pl-14 text-lg transition-all duration-200 focus:border-sky-500 focus:ring-2 focus:ring-sky-500"
+                                    />
+                                </div>
 
-                {/* Pagination */}
-                {schedules.links && schedules.data.length > 0 && (
-                    <div className="flex justify-center items-center gap-2 mt-6">
-                        {schedules.links.map((link, index) => (
-                            <Link
-                                key={index}
-                                href={link.url || '#'}
-                                className={`px-4 py-2 border rounded-lg transition duration-150
-                                    ${link.active ? 'bg-blue-600 text-white border-blue-600 dark:bg-blue-700' : 'border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'}
-                                    ${!link.url ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed' : ''}
-                                `}
-                                dangerouslySetInnerHTML={{ __html: link.label }} // Untuk render Previous & Next HTML entities
-                                preserveScroll
-                                preserveState
-                                disabled={!link.url} // Non-aktifkan jika URL tidak ada
-                            />
-                        ))}
+                                {/* Filter Toggle */}
+                                <div className="flex items-center justify-between">
+                                    <button
+                                        onClick={() => setShowFilters(!showFilters)}
+                                        className="flex items-center gap-2 rounded-lg px-5 py-3 text-base text-sky-600 transition-all duration-200 hover:bg-sky-50 hover:text-sky-700"
+                                    >
+                                        <Filter className="h-5 w-5" />
+                                        <span className="font-medium">Filter Lanjutan</span>
+                                        <ChevronRight className={`h-5 w-5 transition-transform duration-200 ${showFilters ? 'rotate-90' : ''}`} />
+                                    </button>
+
+                                    {(selectedStatus || selectedStore || selectedTechnician || dateFrom || dateTo || searchTerm) && (
+                                        <button
+                                            onClick={() => {
+                                                setSearchTerm('');
+                                                setSelectedStatus('');
+                                                setSelectedStore('');
+                                                setSelectedTechnician('');
+                                                setDateFrom('');
+                                                setDateTo('');
+                                            }}
+                                            className="rounded-lg px-4 py-2 text-base text-slate-500 transition-all duration-200 hover:bg-slate-100 hover:text-slate-700"
+                                        >
+                                            Reset Filter
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* Advanced Filters */}
+                                {showFilters && (
+                                    <div className="space-y-6 border-t border-sky-100 pt-6">
+                                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                                            <div className="space-y-2">
+                                                <label className="text-base font-medium text-slate-700">Status</label>
+                                                <select
+                                                    value={selectedStatus}
+                                                    onChange={(e) => setSelectedStatus(e.target.value)}
+                                                    className="w-full rounded-xl border-2 border-sky-100 bg-gradient-to-r from-sky-50/30 to-blue-50/30 px-5 py-4 text-base transition-all duration-200 focus:border-sky-500 focus:ring-2 focus:ring-sky-500"
+                                                >
+                                                    <option value="">Semua Status</option>
+                                                    {statusOptions.map((status) => (
+                                                        <option key={status.value} value={status.value}>
+                                                            {status.label}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <label className="text-base font-medium text-slate-700">Toko</label>
+                                                <select
+                                                    value={selectedStore}
+                                                    onChange={(e) => setSelectedStore(e.target.value)}
+                                                    className="w-full rounded-xl border-2 border-sky-100 bg-gradient-to-r from-sky-50/30 to-blue-50/30 px-5 py-4 text-base transition-all duration-200 focus:border-sky-500 focus:ring-2 focus:ring-sky-500"
+                                                >
+                                                    <option value="">Semua Toko</option>
+                                                    {stores.map((store) => (
+                                                        <option key={store.id} value={store.id.toString()}>
+                                                            {store.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <label className="text-base font-medium text-slate-700">Teknisi</label>
+                                                <select
+                                                    value={selectedTechnician}
+                                                    onChange={(e) => setSelectedTechnician(e.target.value)}
+                                                    className="w-full rounded-xl border-2 border-sky-100 bg-gradient-to-r from-sky-50/30 to-blue-50/30 px-5 py-4 text-base transition-all duration-200 focus:border-sky-500 focus:ring-2 focus:ring-sky-500"
+                                                >
+                                                    <option value="">Semua Teknisi</option>
+                                                    {technicians.map((tech) => (
+                                                        <option key={tech.id} value={tech.id.toString()}>
+                                                            {tech.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <label className="text-base font-medium text-slate-700">Urutkan</label>
+                                                <select
+                                                    value={`${sortBy}:${sortDirection}`}
+                                                    onChange={handleSortChange}
+                                                    className="w-full rounded-xl border-2 border-sky-100 bg-gradient-to-r from-sky-50/30 to-blue-50/30 px-5 py-4 text-base transition-all duration-200 focus:border-sky-500 focus:ring-2 focus:ring-sky-500"
+                                                >
+                                                    <option value="scheduled_at:desc">Tanggal Terdekat</option>
+                                                    <option value="scheduled_at:asc">Tanggal Terjauh</option>
+                                                    <option value="status:asc">Status (A-Z)</option>
+                                                    <option value="status:desc">Status (Z-A)</option>
+                                                    <option value="store.name:asc">Toko (A-Z)</option>
+                                                    <option value="store.name:desc">Toko (Z-A)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                                            <div className="space-y-2">
+                                                <label className="text-base font-medium text-slate-700">Dari Tanggal</label>
+                                                <input
+                                                    type="date"
+                                                    value={dateFrom}
+                                                    onChange={(e) => setDateFrom(e.target.value)}
+                                                    className="w-full rounded-xl border-2 border-sky-100 bg-gradient-to-r from-sky-50/30 to-blue-50/30 px-5 py-4 text-base transition-all duration-200 focus:border-sky-500 focus:ring-2 focus:ring-sky-500"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-base font-medium text-slate-700">Sampai Tanggal</label>
+                                                <input
+                                                    type="date"
+                                                    value={dateTo}
+                                                    onChange={(e) => setDateTo(e.target.value)}
+                                                    className="w-full rounded-xl border-2 border-sky-100 bg-gradient-to-r from-sky-50/30 to-blue-50/30 px-5 py-4 text-base transition-all duration-200 focus:border-sky-500 focus:ring-2 focus:ring-sky-500"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Schedule Cards Grid */}
+                        {schedules.data.length > 0 ? (
+                            <div
+                                className="grid w-full grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+                                style={{ minHeight: '900px' }}
+                            >
+                                {schedules.data.map((schedule) => (
+                                    <div
+                                        key={schedule.id}
+                                        className="group flex h-full flex-col overflow-hidden rounded-2xl border-2 border-sky-200 bg-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:border-sky-300 hover:shadow-xl"
+                                        style={{ minHeight: '360px' }}
+                                    >
+                                        {/* Card Header */}
+                                        <div className="border-b border-sky-100 bg-gradient-to-br from-sky-50 to-blue-50 p-6">
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex items-start gap-4">
+                                                    <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-gradient-to-br from-sky-400 to-blue-600 shadow-sm">
+                                                        <Calendar className="h-7 w-7 text-white" />
+                                                    </div>
+                                                    <div className="min-w-0 flex-1">
+                                                        <h3 className="truncate text-xl font-bold text-slate-800 transition-colors duration-200 group-hover:text-sky-600">
+                                                            <Link href={route('schedules.show', schedule.id)}>{schedule.store.name}</Link>
+                                                        </h3>
+                                                        <div className="mt-1 flex items-center gap-1">
+                                                            <Building2 className="h-4 w-4 text-slate-400" />
+                                                            <span className="truncate text-sm font-medium text-slate-600">Jadwal Perawatan</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex-shrink-0">{getStatusBadge(schedule.status)}</div>
+                                            </div>
+                                        </div>
+
+                                        {/* Card Body */}
+                                        <div className="flex-1 space-y-4 p-6">
+                                            {/* Schedule Date & Time */}
+                                            <div className="flex items-start gap-2">
+                                                <Clock className="mt-0.5 h-5 w-5 flex-shrink-0 text-sky-500" />
+                                                <div className="min-w-0">
+                                                    <p className="truncate text-base font-medium text-slate-700">
+                                                        {formatDate(schedule.scheduled_at)}
+                                                    </p>
+                                                    <p className="mt-1 truncate text-sm text-slate-500">{formatTime(schedule.scheduled_at)}</p>
+                                                </div>
+                                            </div>
+
+                                            {/* Technician */}
+                                            {schedule.technician && (
+                                                <div className="flex items-center gap-2">
+                                                    <UserIcon className="h-5 w-5 text-slate-400" />
+                                                    <span className="truncate text-sm text-slate-600">{schedule.technician.name}</span>
+                                                </div>
+                                            )}
+
+                                            {/* Notes */}
+                                            {schedule.notes && (
+                                                <div className="flex items-start gap-2">
+                                                    <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-500" />
+                                                    <p className="line-clamp-3 text-sm text-slate-600">{schedule.notes}</p>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Card Actions */}
+                                        <div className="mt-auto p-6 pt-0">
+                                            <div className="flex items-center gap-3">
+                                                <Link
+                                                    href={route('schedules.show', schedule.id)}
+                                                    className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-sky-200 bg-gradient-to-r from-sky-50 to-blue-50 px-4 py-3 text-base font-semibold text-sky-700 transition-all duration-200 hover:border-sky-300 hover:from-sky-100 hover:to-blue-100"
+                                                >
+                                                    <Calendar className="h-4 w-4" />
+                                                    Lihat
+                                                </Link>
+                                                <Link
+                                                    href={route('schedules.edit', schedule.id)}
+                                                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-sky-500 to-blue-600 px-4 py-3 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:from-sky-600 hover:to-blue-700 hover:shadow-md"
+                                                >
+                                                    <Edit className="h-4 w-4" />
+                                                    Edit
+                                                </Link>
+                                                <button
+                                                    onClick={() => handleDelete(schedule.id)}
+                                                    className="rounded-lg border border-red-200 bg-red-50 p-3 text-red-600 transition-all duration-200 hover:scale-105 hover:border-red-300 hover:bg-red-100"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                                {/* Fill empty grid to always show consistent layout */}
+                                {Array.from({ length: Math.max(0, 12 - schedules.data.length) }).map((_, idx) => (
+                                    <div key={`empty-${idx}`} className="rounded-2xl border-2 border-blue-50 bg-slate-50 opacity-0" />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="w-full rounded-2xl border border-sky-100 bg-white p-16 text-center shadow-sm">
+                                <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-100 to-blue-100">
+                                    <Calendar className="h-12 w-12 text-sky-500" />
+                                </div>
+                                <h3 className="mb-2 text-2xl font-bold text-slate-800">Tidak ada jadwal ditemukan</h3>
+                                <p className="mb-6 text-slate-600">Belum ada jadwal yang sesuai dengan kriteria pencarian Anda.</p>
+                                <div className="flex flex-col justify-center gap-3 sm:flex-row">
+                                    <button
+                                        onClick={() => {
+                                            setSearchTerm('');
+                                            setSelectedStatus('');
+                                            setSelectedStore('');
+                                            setSelectedTechnician('');
+                                            setDateFrom('');
+                                            setDateTo('');
+                                        }}
+                                        className="rounded-xl bg-slate-100 px-8 py-4 text-lg font-semibold text-slate-700 transition-all duration-200 hover:bg-slate-200"
+                                    >
+                                        Reset Filter
+                                    </button>
+                                    <Link
+                                        href={route('schedules.create')}
+                                        className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 px-8 py-4 text-lg font-semibold text-white transition-all duration-200 hover:from-sky-600 hover:to-blue-700"
+                                    >
+                                        <Plus className="h-5 w-5" />
+                                        Tambah Jadwal Baru
+                                    </Link>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Enhanced Pagination */}
+                        {schedules.links && schedules.data.length > 0 && (
+                            <div className="w-full rounded-2xl border border-sky-100 bg-white p-8 shadow-sm">
+                                <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
+                                    <div className="text-base text-slate-600">
+                                        Menampilkan <span className="font-semibold text-slate-800">{schedules.from}</span> -
+                                        <span className="font-semibold text-slate-800">{schedules.to}</span> dari
+                                        <span className="font-semibold text-slate-800"> {schedules.total}</span> jadwal
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        {schedules.links.map((link, index) => (
+                                            <Link
+                                                key={index}
+                                                href={link.url || '#'}
+                                                className={`rounded-xl px-6 py-3 text-base font-semibold transition-all duration-200 ${
+                                                    link.active
+                                                        ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-md'
+                                                        : link.url
+                                                          ? 'bg-slate-100 text-slate-700 hover:scale-105 hover:bg-slate-200'
+                                                          : 'cursor-not-allowed bg-slate-50 text-slate-400'
+                                                }`}
+                                                dangerouslySetInnerHTML={{ __html: link.label }}
+                                                preserveScroll
+                                                preserveState
+                                                // @ts-ignore
+                                                disabled={!link.url}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                )}
+                </div>
             </div>
         </AppLayout>
     );

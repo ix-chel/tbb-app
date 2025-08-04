@@ -32,5 +32,32 @@ class UserSeeder extends Seeder
 
         // Assign role super-admin ke user
         $superAdmin->assignRole($superAdminRole);
+
+        $adminRole = Role::where('name', 'admin')->first();
+        $admin = User::create([
+            'name' => 'Admin',
+            'email' => 'admin@example.com',
+            'password' => Hash::make('admin123'),
+            'email_verified_at' => now(),
+        ]);
+        $admin->assignRole($adminRole);
+
+        $technicianRole = Role::where('name', 'technician')->first();
+        $technician = User::create([
+            'name' => 'Technician',
+            'email' => 'technician@example.com',
+            'password' => Hash::make('technician123'),
+            'email_verified_at' => now(),
+        ]);
+        $technician->assignRole($technicianRole);
+
+        $clientRole = Role::where('name', 'client')->first();
+        $client = User::create([
+            'name' => 'Client',
+            'email' => 'client@example.com',
+            'password' => Hash::make('client123'),
+            'email_verified_at' => now(),
+        ]);
+        $client->assignRole($clientRole);
     }
 } 

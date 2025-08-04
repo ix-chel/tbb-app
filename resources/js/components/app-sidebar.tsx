@@ -3,9 +3,10 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { Building2, FileText, LayoutGrid, MessageSquare, Package, PersonStanding, QrCode, Store, Wrench } from 'lucide-react';
+import { Building2, FileText, LayoutGrid, MessageSquare, Package, PersonStanding, QrCode, Store, Wrench, User } from 'lucide-react';
 import { useMemo } from 'react';
 import AppLogo from './app-logo';
+
 
 const iconMap: Record<string, any> = {
     home: LayoutGrid,
@@ -23,6 +24,11 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: '/dashboard',
         icon: LayoutGrid,
+    },
+    {
+        title: 'Client',
+        href: '/client',
+        icon: User,
     },
     {
         title: 'Companies',
@@ -74,13 +80,28 @@ export function AppSidebar({ user }: AppSidebarProps) {
     const { props } = usePage();
     const currentPath = (props?.url as string) || '/';
 
-    // Update current state for menu items
-    const navItems = useMemo(() => {
-        return mainNavItems.map((item) => ({
-            ...item,
-            current: currentPath.startsWith(item.href),
-        }));
-    }, [currentPath]);
+    const role = (usePage().props.auth as any)?.role_name;
+
+    const filteredNavItems = useMemo(() => {
+        if (!role) return [];
+
+        const roleMap: Record<string, string[]> = {
+            'super-admin': ['Dashboard', 'Companies', 'Stores', 'Inventory', 'QR Code', 'Maintenance Reports', 'Maintenance Schedule', 'Feedback', 'Users'],
+            'admin':       ['Dashboard', 'Companies', 'Stores', 'Inventory', 'QR Code', 'Maintenance Reports', 'Maintenance Schedule', 'Feedback'],
+            'technician':  ['Dashboard', 'Stores', 'Inventory','QR Code', 'Maintenance Reports', 'Maintenance Schedule', 'Feedback'],
+            'client':      ['Client', 'Companies', 'Stores', 'Feedback'],
+        };
+
+        const allowed = roleMap[role] || [];
+
+        return mainNavItems
+            .filter((item) => allowed.includes(item.title))
+            .map((item) => ({
+                ...item,
+                current: currentPath.startsWith(item.href),
+            }));
+    }, [role, currentPath]);
+
 
     return (
         <Sidebar collapsible="icon" variant="inset">
@@ -97,7 +118,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={navItems} />
+                <NavMain items={filteredNavItems} />
             </SidebarContent>
 
             <SidebarFooter>

@@ -56,13 +56,14 @@ class MaintenanceController extends Controller
     public function store(Request $request, Store $store = null)
     {
         $this->authorize('create', MaintenanceReport::class);
-        
+
         $validated = $request->validate([
-            'equipment_status' => 'required|in:good,needs_attention,broken',
+            'store_id' => 'required|exists:stores,id',
             'filter_changed' => 'required|boolean',
             'filter_type' => 'nullable|string',
             'notes' => 'nullable|string',
-            'photos.*' => 'nullable|image|max:2048'
+            'photos.*' => 'nullable|image|max:2048',
+            'checklist_items' => 'nullable|array'
         ]);
         
         $photoPaths = [];
@@ -73,32 +74,41 @@ class MaintenanceController extends Controller
         }
         
         $report = MaintenanceReport::create([
-            'store_id' => $store ? $store->id : $request->input('store_id'),
+            'store_id' => $validated['store_id'],
             'technician_id' => auth()->id(),
-            'equipment_status' => $validated['equipment_status'],
             'filter_changed' => $validated['filter_changed'],
             'filter_type' => $validated['filter_type'],
             'notes' => $validated['notes'],
             'photo_paths' => json_encode($photoPaths),
+            'checklist_items' => $validated['checklist_items'] ?? [],
             'status' => 'pending'
         ]);
-        
-        return response()->json([
-            'message' => 'Maintenance report submitted successfully',
-            'report' => $report
-        ]);
+        // Redirect ke halaman maintenance reports untuk teknisi
+        return redirect()->route('maintenance.reports.index')->with('message', 'Maintenance report submitted successfully');
     }
     
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', MaintenanceReport::class);
         
-        $reports = MaintenanceReport::with(['store', 'technician'])
-            ->latest()
-            ->paginate(10);
+        $query = MaintenanceReport::with(['store', 'technician']);
+        
+        // Filter by store_id if provided (from QR scan)
+        if ($request->has('store_id')) {
+            $query->where('store_id', $request->store_id);
+        }
+        
+        $reports = $query->latest()->paginate(10);
+        
+        // Get store info if filtering by store
+        $store = null;
+        if ($request->has('store_id')) {
+            $store = Store::find($request->store_id);
+        }
             
         return Inertia::render('maintenancereport/Index', [
-            'reports' => $reports
+            'reports' => $reports,
+            'filteredStore' => $store
         ]);
     }
     

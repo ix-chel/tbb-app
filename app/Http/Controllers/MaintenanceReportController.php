@@ -2,12 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FilterQR;
 use App\Models\MaintenanceReport;
+use App\Models\Store;
+use App\Models\StoreQR;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Inertia\Inertia;
 
 class MaintenanceReportController extends Controller
 {
@@ -38,6 +44,56 @@ class MaintenanceReportController extends Controller
             'data' => $reports
         ]);
     }
+    public function createWithStore(Request $request, $storeId)
+    {
+        $store = \App\Models\Store::findOrFail($storeId);
+        $technicians = \App\Models\User::where('role', 'technician')->get(); // Atur sesuai struktur datamu
+
+        return inertia('MaintenanceReport/Create', [
+            'store' => $store,
+            'technicians' => $technicians,
+        ]);
+    }
+
+public function store(Request $request)
+    {
+        $this->authorize('create', MaintenanceReport::class);
+
+        $validated = $request->validate([
+            'store_id' => 'required|exists:stores,id',
+            'technician_id' => 'required|exists:users,id',
+            'equipment_status' => 'required|in:good,needs_attention,broken',
+            'filter_changed' => 'required|boolean',
+            'filter_type' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
+            'photos' => 'nullable|array',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'checklist_items' => 'required|array'
+        ]);
+
+        $photoPaths = [];
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $photo) {
+                $path = $photo->store('maintenance-photos', 'public');
+                $photoPaths[] = $path;
+            }
+        }
+
+        MaintenanceReport::create([
+            'store_id' => $validated['store_id'],
+            'technician_id' => $validated['technician_id'],
+            'equipment_status' => $validated['equipment_status'],
+            'filter_changed' => $validated['filter_changed'],
+            'filter_type' => $validated['filter_type'],
+            'notes' => $validated['notes'],
+            'photo_paths' => $photoPaths,
+            'checklist_items' => $validated['checklist_items'],
+            'status' => 'pending',
+        ]);
+
+        return Redirect::route('dashboard')->with('success', 'Maintenance report submitted successfully.');
+    }
+
 
     public function export(Request $request)
     {
@@ -125,4 +181,30 @@ class MaintenanceReportController extends Controller
             default => $status
         };
     }
-} 
+
+    public function createqr(Request $request)
+    {
+        $qrCode = $request->query('qr_code');
+
+        $prefilledStoreId = null;
+
+        $technicians = User::whereHas('roles', fn ($query) => $query->where('name', 'technician'))->get(['id', 'name']);
+
+        if ($qrCode) {
+            $qr = FilterQR::with('store')
+                    ->where('qr_code', $qrCode)
+                    ->first();
+
+            if ($qr) {
+                $prefilledStoreId = $qr->store?->id;
+            }
+        }
+
+        return Inertia::render('maintenancereport/Createqr', [
+            'stores' => Store::orderBy('name')->get(['id', 'name']),
+            'prefilled_store_id' => $prefilledStoreId,
+            'technicians' => $technicians
+        ]);
+    }
+
+}

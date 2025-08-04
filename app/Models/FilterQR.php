@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\InventoryItem;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -25,7 +24,7 @@ class FilterQR extends Model
         'notes',
         'contact_person',
         'contact_phone',
-        'contact_email'
+        'contact_email',
     ];
 
     protected $casts = [
@@ -34,8 +33,12 @@ class FilterQR extends Model
         'expiry_date' => 'datetime',
     ];
 
+    // =============================
+    // Relasi
+    // =============================
+
     /**
-     * Relasi ke store
+     * Relasi ke store.
      */
     public function store(): BelongsTo
     {
@@ -43,7 +46,7 @@ class FilterQR extends Model
     }
 
     /**
-     * Relasi ke filter
+     * Relasi ke filter (inventory item).
      */
     public function filter(): BelongsTo
     {
@@ -51,7 +54,8 @@ class FilterQR extends Model
     }
 
     /**
-     * Relasi ke inventory item
+     * Alias (tidak wajib, sudah ada filter())
+     * Bisa dihapus jika tidak dibutuhkan ganda.
      */
     public function inventoryItem(): BelongsTo
     {
@@ -59,53 +63,7 @@ class FilterQR extends Model
     }
 
     /**
-     * Scope untuk QR code yang aktif
-     */
-    public function scopeActive($query)
-    {
-        return $query->where('status', 'active');
-    }
-
-    /**
-     * Scope untuk QR code yang expired
-     */
-    public function scopeExpired($query)
-    {
-        return $query->where('expiry_date', '<', now());
-    }
-
-    /**
-     * Cek apakah QR code sudah expired
-     */
-    public function isExpired(): bool
-    {
-        return $this->expiry_date && $this->expiry_date->isPast();
-    }
-
-    /**
-     * Scope untuk QR code yang akan expired dalam 30 hari
-     */
-    public function scopeExpiringSoon($query)
-    {
-        return $query->where('status', 'active')
-            ->whereNotNull('expiry_date')
-            ->where('expiry_date', '<=', now()->addDays(30))
-            ->where('expiry_date', '>', now());
-    }
-
-    /**
-     * Cek apakah QR code akan expired dalam X hari
-     */
-    public function isExpiringSoon(int $days = 30): bool
-    {
-        return $this->status === 'active' 
-            && $this->expiry_date 
-            && $this->expiry_date->isFuture()
-            && $this->expiry_date->diffInDays(now()) <= $days;
-    }
-
-    /**
-     * Relasi ke history scan
+     * Relasi ke riwayat scan.
      */
     public function scanHistory(): HasMany
     {
@@ -113,10 +71,48 @@ class FilterQR extends Model
     }
 
     /**
-     * Relasi ke laporan maintenance
+     * Relasi ke laporan maintenance.
      */
     public function maintenanceReports(): HasMany
     {
         return $this->hasMany(MaintenanceReport::class);
     }
-} 
+
+    // =============================
+    // Scopes
+    // =============================
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    public function scopeExpired($query)
+    {
+        return $query->where('expiry_date', '<', now());
+    }
+
+    public function scopeExpiringSoon($query)
+    {
+        return $query->where('status', 'active')
+            ->whereNotNull('expiry_date')
+            ->whereBetween('expiry_date', [now(), now()->addDays(30)]);
+    }
+
+    // =============================
+    // Helpers
+    // =============================
+
+    public function isExpired(): bool
+    {
+        return $this->expiry_date && $this->expiry_date->isPast();
+    }
+
+    public function isExpiringSoon(int $days = 30): bool
+    {
+        return $this->status === 'active'
+            && $this->expiry_date
+            && $this->expiry_date->isFuture()
+            && $this->expiry_date->diffInDays(now()) <= $days;
+    }
+}

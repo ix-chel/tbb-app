@@ -22,11 +22,11 @@ class StoreQRController extends Controller
     {
         $this->authorize('view', $store);
 
-        // Generate unique QR code
-        $qrCode = Str::random(32);
-        $scanUrl = route('maintenance.scan', ['qr' => $qrCode]);
-        
-        // Create QR code
+        // Buat kode QR unik
+        $qrCodeValue = Str::uuid()->toString(); // lebih aman daripada random string
+        $scanUrl = route('maintenance.scan', ['qr' => $qrCodeValue]);
+
+        // Generate QR code image
         $qrCodeObj = QrCode::create($scanUrl)
             ->setEncoding(new Encoding('UTF-8'))
             ->setErrorCorrectionLevel(new ErrorCorrectionLevelHigh())
@@ -36,75 +36,69 @@ class StoreQRController extends Controller
             ->setForegroundColor(new Color(0, 0, 0))
             ->setBackgroundColor(new Color(255, 255, 255));
 
-        // Create generic label
-        $label = Label::create($store->name)
-            ->setTextColor(new Color(0, 0, 0));
-
-        // Create QR code with label
+        $label = Label::create($store->name)->setTextColor(new Color(0, 0, 0));
         $writer = new PngWriter();
         $result = $writer->write($qrCodeObj, null, $label);
-            
-        // Save QR code image
-        $qrPath = 'qrcodes/' . $qrCode . '.png';
-        Storage::put('/' . $qrPath, $result->getString());
-        
-        // Save QR code data
+
+        // Simpan gambar QR di storage
+        $qrPath = 'qrcodes/' . $qrCodeValue . '.png';
+        Storage::put($qrPath, $result->getString());
+
+        // Simpan data ke DB
         $storeQR = StoreQR::create([
             'store_id' => $store->id,
-            'qr_code' => $qrCode,
+            'qr_code' => $qrCodeValue,
             'qr_path' => $qrPath,
-            'scan_url' => $scanUrl
+            'scan_url' => $scanUrl,
+            'status' => 'active'
         ]);
-        
+
         return response()->json([
-            'message' => 'QR Code generated successfully',
+            'message' => 'QR Code berhasil dibuat.',
             'qr_code' => $storeQR
         ]);
     }
-    
-    public function downloadQR(Store $store)
+
+    public function download($qrId)
     {
-        $this->authorize('view', $store);
-        
-        $storeQR = StoreQR::where('store_id', $store->id)->first();
-        
-        if (!$storeQR) {
-            return response()->json([
-                'message' => 'QR Code not found'
-            ], 404);
+        $storeQR = StoreQR::findOrFail($qrId);
+
+        if (!Storage::exists($storeQR->qr_path)) {
+            abort(404, 'QR image tidak ditemukan di storage.');
         }
-        
-        return Storage::download('public/' . $storeQR->qr_path);
+
+        return response()->download(
+            storage_path('app/' . $storeQR->qr_path),
+            'qr-code-' . $storeQR->store->id . '.png',
+            ['Content-Type' => 'image/png']
+        );
     }
 
     public function index()
     {
         $this->authorize('viewAny', StoreQR::class);
-        
-        $qrs = StoreQR::with(['store'])
-            ->latest()
-            ->paginate(10);
-            
+
+        $qrs = StoreQR::with('store')->latest()->paginate(10);
+
         return Inertia::render('stores/qrcodes/index', [
             'qrs' => $qrs
         ]);
     }
-    
+
     public function storeQRCodes(Store $store)
     {
         $this->authorize('view', $store);
-        
-        $qrs = $store->qrCodes()
-            ->latest()
-            ->get();
-            
+
+        $qrs = $store->qrCodes()->latest()->get();
+
         return response()->json([
             'data' => $qrs
         ]);
     }
-    
+
+    // opsional: jika route generate belum dipakai
     public function generate(Store $store)
     {
-        // ... existing code ...
+        return $this->generateQR($store);
     }
-} 
+}

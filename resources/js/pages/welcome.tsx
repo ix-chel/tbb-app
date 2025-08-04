@@ -2,14 +2,15 @@ import gambar from '@/pages/1.jpg';
 import gambar2 from '@/pages/2.jpg';
 import gambar3 from '@/pages/3.jpg';
 import gambar4 from '@/pages/4.jpg';
+import bgAbout from '@/pages/bgabout.jpeg';
 import logo from '@/pages/toya.png';
 import { type SharedData } from '@/types';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import { Head, Link, usePage } from '@inertiajs/react';
 import axios from 'axios';
 import { CheckCircle, Clock, FileText, QrCode } from 'lucide-react';
 import { useEffect, useState } from 'react';
-//import { LatLngExpression } from 'leaflet';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import '../../css/welcome.css';
 
 const MapView = ({ address }: { address: string }) => {
     const [coordinates, setCoordinates] = useState<{ lat: number; lon: number } | null>(null);
@@ -86,12 +87,31 @@ const MapView = ({ address }: { address: string }) => {
 export default function Welcome() {
     const { auth } = usePage<SharedData>().props || {};
 
+    // Create particles dynamically
+    const createParticles = () => {
+        const particles = [];
+        for (let i = 0; i < 50; i++) {
+            particles.push(
+                <div
+                    key={i}
+                    className="particle"
+                    style={{
+                        left: `${Math.random() * 100}%`,
+                        animationDelay: `${Math.random() * 10}s`,
+                        animationDuration: `${8 + Math.random() * 4}s`,
+                    }}
+                />,
+            );
+        }
+        return particles;
+    };
+
     return (
         <>
             <Head title="Toya Bumi Bersih">
                 <meta
                     name="description"
-                    content="Layanan perawatan filter air untuk perusahaan & toko. Sistem maintenance otomatis & laporan real-time. Daftar gratis sekarang!"
+                    content="Layanan perawatan filter air untuk perusahaan & toko. Sistem maintenance otomatis & laporan real-time!"
                 />
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
@@ -115,15 +135,9 @@ export default function Welcome() {
                                 <>
                                     <Link
                                         href={route('login')}
-                                        className="ext-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+                                        className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
                                     >
                                         Masuk
-                                    </Link>
-                                    <Link
-                                        href={route('register')}
-                                        className="inline-block rounded-lg bg-blue-600 px-10 py-5 text-sm font-medium text-white hover:bg-blue-700 dark:hover:bg-blue-800"
-                                    >
-                                        Daftar
                                     </Link>
                                 </>
                             )}
@@ -131,74 +145,145 @@ export default function Welcome() {
                     </nav>
                 </header>
 
-                {/* Hero Section */}
-                <section className="px-4 pt-32 pb-20">
-                    <div className="container mx-auto max-w-6xl">
-                        <div className="grid items-center gap-12 lg:grid-cols-2">
-                            <div>
-                                <h1 className="mb-6 text-4xl font-bold text-gray-900 lg:text-5xl dark:text-white">
-                                    Jasa Perawatan & Instalasi Filter Air <span className="text-blue-600">Terpercaya</span> untuk Bisnis Anda
-                                </h1>
-                                <p className="mb-8 text-xl text-gray-600 dark:text-gray-300">
-                                    Sistem maintenance modern berbasis QR Code untuk memantau filter air Anda dari mana saja
-                                </p>
-                                <div className="flex flex-wrap gap-4">
-                                    <Link
-                                        href={route('register')}
-                                        className="inline-block rounded-lg bg-blue-600 px-8 py-3 text-base font-medium text-white hover:bg-blue-700 dark:hover:bg-blue-800"
-                                    >
-                                        Daftar Sekarang
-                                    </Link>
-                                    <a
-                                        href="https://wa.me/6289524874998"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-block rounded-lg border border-gray-300 px-8 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
-                                    >
-                                        Konsultasi Gratis
-                                    </a>
+                {/* Hero Section with 3D Carousel */}
+                <section className="hero-section flex min-h-screen items-center justify-center">
+                    {/* Background Effects */}
+                    <div className="wave-bg"></div>
+
+                    {/* Floating Bubbles */}
+                    <div className="floating-bubbles">
+                        <div className="bubble"></div>
+                        <div className="bubble"></div>
+                        <div className="bubble"></div>
+                        <div className="bubble"></div>
+                        <div className="bubble"></div>
+                        <div className="bubble"></div>
+                    </div>
+
+                    {/* Particles */}
+                    <div className="particles">{createParticles()}</div>
+
+                    <div className="hero-content">
+                        <div className="container mx-auto max-w-7xl px-4">
+                            <div className="grid items-center gap-8 lg:grid-cols-2">
+                                {/* Text Section */}
+                                <div className="z-10 lg:pr-8">
+                                    <h1 className="hero-title text-glow">
+                                        Jasa Perawatan & Instalasi Filter Air <span className="highlight-text">Terpercaya</span> untuk Bisnis Anda
+                                    </h1>
+                                    <p className="hero-subtitle">
+                                        Sistem maintenance modern berbasis QR Code untuk memantau filter air Anda dari mana saja. Solusi terdepan
+                                        untuk perusahaan, toko air minum, dan industri yang membutuhkan pengelolaan filter air yang efisien dan
+                                        profesional.
+                                    </p>
+                                    <div className="mt-6 flex flex-wrap gap-4">
+                                        <a
+                                            href="https://wa.me/6289524874998"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="btn-primary-custom"
+                                        >
+                                            <i className="fab fa-whatsapp mr-2"></i>
+                                            Hubungi Kami
+                                        </a>
+                                        <a href="#tentang-kami" className="btn-outline-custom">
+                                            Pelajari Lebih Lanjut
+                                        </a>
+                                    </div>
+                                </div>
+
+                                {/* 3D Carousel Section */}
+                                <div className="z-10">
+                                    <div className="carousel-3d-container">
+                                        <div className="carousel-3d">
+                                            <div className="carousel-item-3d">
+                                                <img src={gambar} alt="ROSW System" className="filter-image-3d" />
+                                                <span className="filter-title-3d">
+                                                    System ROSW
+                                                    <br />
+                                                    Reverse Osmosis Sea Water
+                                                </span>
+                                            </div>
+                                            <div className="carousel-item-3d">
+                                                <img src={gambar2} alt="RTD System" className="filter-image-3d" />
+                                                <span className="filter-title-3d">
+                                                    System RTD
+                                                    <br />
+                                                    Ready to Drink
+                                                </span>
+                                            </div>
+                                            <div className="carousel-item-3d">
+                                                <img src={gambar3} alt="Tab Filter" className="filter-image-3d" />
+                                                <span className="filter-title-3d">
+                                                    Tab Filter
+                                                    <br />
+                                                    Advanced Filtration
+                                                </span>
+                                            </div>
+                                            <div className="carousel-item-3d">
+                                                <img src={gambar4} alt="ROBW System" className="filter-image-3d" />
+                                                <span className="filter-title-3d">
+                                                    System ROBW
+                                                    <br />
+                                                    Reverse Osmosis Brackish Water
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Feature Highlights */}
+                                    <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+                                        <div className="text-center">
+                                            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                                                <Clock className="h-6 w-6 text-white" />
+                                            </div>
+                                            <p className="text-sm font-medium text-white/90">Perawatan Terjadwal</p>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                                                <QrCode className="h-6 w-6 text-white" />
+                                            </div>
+                                            <p className="text-sm font-medium text-white/90">QR Code Tracking</p>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                                                <CheckCircle className="h-6 w-6 text-white" />
+                                            </div>
+                                            <p className="text-sm font-medium text-white/90">Laporan Real-time</p>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                                                <FileText className="h-6 w-6 text-white" />
+                                            </div>
+                                            <p className="text-sm font-medium text-white/90">Invoice Online</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="mt-8 flex items-center justify-center">
-                                <Carousel className="w-[320px]">
-                                    <CarouselContent>
-                                        <CarouselItem>
-                                            <div className="flex flex-col items-center">
-                                                <img src={gambar} alt="Toya Bumi Bersih 1" className="mx-auto h-80 w-600 object-contain" />
-                                                <span className="mt-2 text-center text-sm font-semibold text-gray-700 dark:text-gray-200">
-                                                    system ROSW = reverse osmosis sea water
-                                                </span>
-                                            </div>
-                                        </CarouselItem>
-                                        <CarouselItem>
-                                            <div className="flex flex-col items-center">
-                                                <img src={gambar2} alt="Toya Bumi Bersih 2" className="mx-auto h-80 w-600 object-contain" />
-                                                <span className="mt-2 text-center text-sm font-semibold text-gray-700 dark:text-gray-200">
-                                                    system RTD/ready to drink
-                                                </span>
-                                            </div>
-                                        </CarouselItem>
-                                        <CarouselItem>
-                                            <div className="flex flex-col items-center">
-                                                <img src={gambar3} alt="Toya Bumi Bersih 3" className="mx-auto h-80 w-600 object-contain" />
-                                                <span className="mt-2 text-center text-sm font-semibold text-gray-700 dark:text-gray-200">
-                                                    tab filter
-                                                </span>
-                                            </div>
-                                        </CarouselItem>
-                                        <CarouselItem>
-                                            <div className="flex flex-col items-center">
-                                                <img src={gambar4} alt="Toya Bumi Bersih 4" className="mx-auto h-80 w-600 object-contain" />
-                                                <span className="mt-2 text-center text-sm font-semibold text-gray-700 dark:text-gray-200">
-                                                    ROBW
-                                                </span>
-                                            </div>
-                                        </CarouselItem>
-                                    </CarouselContent>
-                                    <CarouselPrevious />
-                                    <CarouselNext />
-                                </Carousel>
-                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Section: Tentang Kami */}
+                <section id="tentang-kami" className="bg-cover bg-center bg-no-repeat px-4 py-24" style={{ backgroundImage: `url(${bgAbout})` }}>
+                    <div className="mx-auto max-w-5xl rounded-xl bg-white/80 p-10 backdrop-blur-sm dark:bg-gray-900/80">
+                        <h2 className="mb-6 text-center text-3xl font-bold text-gray-900 dark:text-white">Tentang Kami</h2>
+                        <div className="space-y-6 text-justify leading-relaxed text-gray-700 dark:text-gray-300">
+                            <p>
+                                Toya Bumi Bersih adalah perusahaan penyedia solusi pengolahan air bersih yang telah berpengalaman lebih dari satu
+                                dekade. Dengan teknologi canggih seperti Reverse Osmosis, Ultra Filtration, dan UV Sterilizer, kami menghadirkan
+                                sistem water treatment yang disesuaikan dengan karakteristik sumber air di setiap lokasi.
+                            </p>
+                            <p>
+                                Kami memahami bahwa hampir 70% sumber air minum rumah tangga di Indonesia terkontaminasi, sehingga penting
+                                menghadirkan sistem yang tidak hanya jernih secara visual, tetapi juga aman secara klinis. Seluruh hasil treatment
+                                diuji di laboratorium resmi untuk memastikan air benar-benar layak konsumsi.
+                            </p>
+                            <p>
+                                Toya Bumi Bersih telah dipercaya oleh berbagai sektor, dari rumah tangga hingga industri, untuk menurunkan biaya
+                                operasional dan meningkatkan kualitas hidup melalui air bersih. Kami tidak sekadar menjual alat, namun memberikan
+                                solusi jangka panjang yang hemat, efektif, dan bertanggung jawab.
+                            </p>
                         </div>
                     </div>
                 </section>
@@ -215,7 +300,6 @@ export default function Welcome() {
                                     Sistem akan mengingatkan jadwal perawatan filter air secara otomatis
                                 </p>
                             </div>
-
                             <div className="rounded-xl bg-gray-50 p-6 dark:bg-gray-700">
                                 <QrCode className="mb-4 h-12 w-12 text-blue-600 dark:text-blue-400" />
                                 <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">QR Code per Cabang</h3>
@@ -310,16 +394,27 @@ export default function Welcome() {
                     </div>
                 </section>
 
-                {/* Location Section - Posisi yang Strategis */}
+                {/* Location Section */}
                 <section className="px-4 py-20">
                     <div className="container mx-auto max-w-6xl">
                         <h2 className="mb-6 text-center text-3xl font-bold text-gray-900 dark:text-white">Lokasi Kantor Kami</h2>
-                        <p className="mb-12 text-center text-xl text-gray-600 dark:text-gray-300">
+                        <p className="mb-6 text-center text-xl text-gray-600 dark:text-gray-300">
                             Kunjungi kantor kami untuk konsultasi langsung tentang kebutuhan filter air bisnis Anda
                         </p>
                         <div className="overflow-hidden rounded-xl bg-white shadow-lg dark:bg-gray-800">
                             <MapView address="-6.160142,106.867702" />
                         </div>
+                        <p className="mt-4 text-center text-base text-gray-700 dark:text-gray-300">
+                            Alamat:{' '}
+                            <a
+                                href="https://www.google.com/maps?q=Jl+berlian+raya+no+382b+sumur+batu+kemayoran+Jakarta+pusat"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                            >
+                                Jl. Berlian Raya No. 382B, Sumur Batu, Kemayoran, Jakarta Pusat
+                            </a>
+                        </p>
                     </div>
                 </section>
 
@@ -329,27 +424,35 @@ export default function Welcome() {
                         <h2 className="mb-6 text-3xl font-bold text-gray-900 dark:text-white">
                             Tingkatkan efisiensi perawatan filter air Anda sekarang juga dengan sistem IMMS
                         </h2>
-                        <Link
-                            href={route('register')}
-                            className="inline-block rounded-lg bg-blue-600 px-8 py-3 text-base font-medium text-white hover:bg-blue-700 dark:hover:bg-blue-800"
+                        <a
+                            href="https://wa.me/6289524874998"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-green-600 px-8 py-3 text-base font-medium text-white hover:from-blue-700 hover:to-green-700 dark:hover:from-blue-800 dark:hover:to-green-800"
                         >
-                            Daftar Gratis Sekarang
-                        </Link>
+                            <i className="fab fa-whatsapp"></i>
+                            Konsultasi Gratis Sekarang
+                        </a>
                     </div>
                 </section>
 
                 {/* Footer */}
                 <footer className="bg-gray-900 px-4 py-12 text-gray-300">
                     <div className="container mx-auto max-w-6xl">
-                        <div className="grid gap-8 md:grid-cols-4">
+                        <div className="grid gap-8 md:grid-cols-3">
+                            {/* Kolom 1 - Logo & Deskripsi */}
                             <div>
                                 <div className="mb-4 flex items-center gap-2">
-                                    <img src={logo} alt="Toya Bumi Bersih" className="h-50 w-50 object-contain" />
+                                    <img src={logo} alt="Toya Bumi Bersih" className="h-16 w-auto object-contain" />
                                 </div>
-                                <p className="text-sm">
-                                    Sistem manajemen perawatan filter air untuk bisnis Anda. Daftar gratis dan nikmati layanan kami.{' '}
+                                <p className="pr-4 text-sm leading-relaxed">
+                                    Toya Bumi Bersih adalah penyedia sistem pengolahan air modern untuk rumah tangga, UMKM, dan industri. Kami
+                                    menyediakan instalasi, perawatan, dan monitoring filter air yang efisien dan profesional untuk membantu Anda
+                                    mendapatkan kualitas air terbaik.
                                 </p>
                             </div>
+
+                            {/* Kolom 2 - Layanan */}
                             <div>
                                 <h3 className="mb-4 text-lg font-semibold text-white">Layanan</h3>
                                 <ul className="space-y-2">
@@ -370,42 +473,25 @@ export default function Welcome() {
                                     </li>
                                 </ul>
                             </div>
+
+                            {/* Kolom 3 - Perusahaan */}
                             <div>
                                 <h3 className="mb-4 text-lg font-semibold text-white">Perusahaan</h3>
                                 <ul className="space-y-2">
                                     <li>
-                                        <Link href="#" className="hover:text-white">
+                                        <a href="#tentang-kami" className="hover:text-white">
                                             Tentang Kami
-                                        </Link>
+                                        </a>
                                     </li>
                                     <li>
                                         <a href="https://wa.me/6289524874998" target="_blank" rel="noopener noreferrer" className="hover:text-white">
                                             Kontak WhatsApp
                                         </a>
                                     </li>
-                                    <li>
-                                        <Link href="#" className="hover:text-white">
-                                            Karir
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h3 className="mb-4 text-lg font-semibold text-white">Legal</h3>
-                                <ul className="space-y-2">
-                                    <li>
-                                        <Link href="#" className="hover:text-white">
-                                            Kebijakan Privasi
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link href="#" className="hover:text-white">
-                                            Syarat & Ketentuan
-                                        </Link>
-                                    </li>
                                 </ul>
                             </div>
                         </div>
+
                         <div className="mt-12 border-t border-gray-800 pt-8 text-center">
                             <p className="text-gray-400">© {new Date().getFullYear()} Toya Bumi Bersih. All rights reserved.</p>
                         </div>

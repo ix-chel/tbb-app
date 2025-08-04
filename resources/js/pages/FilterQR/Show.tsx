@@ -109,7 +109,7 @@ export default function Show({ qr }: Props) {
                                         <img
                                             src={qrImagePath}
                                             alt={`QR Code ${qr.id}`}
-                                            className="w-32 h-32 object-contain"
+                                            className="w-48 h-48 object-contain"
                                             onError={(e) => {
                                                 // fallback jika gambar tidak ditemukan
                                                 (e.target as HTMLImageElement).src = '/storage/qrcodes/placeholder.png';

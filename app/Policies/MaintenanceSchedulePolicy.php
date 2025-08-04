@@ -9,7 +9,7 @@ class MaintenanceSchedulePolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->hasAnyRole(['super-admin', 'Admin', 'technician', 'Client']);
+        return $user->hasAnyRole(['super-admin', 'admin', 'technician', 'client']);
     }
 
     public function view(User $user, MaintenanceSchedule $schedule): bool
@@ -19,7 +19,7 @@ class MaintenanceSchedulePolicy
 
     public function create(User $user): bool
     {
-        return $user->hasAnyRole(['super-admin', 'Admin']);
+        return $user->hasAnyRole(['super-admin', 'admin']);
     }
 
     public function update(User $user, MaintenanceSchedule $schedule): bool
@@ -29,12 +29,12 @@ class MaintenanceSchedulePolicy
 
     public function delete(User $user, MaintenanceSchedule $schedule): bool
     {
-        return $user->hasAnyRole(['super-admin', 'Admin']);
+        return $user->hasAnyRole(['super-admin', 'admin']);
     }
 
     private function canAccessSchedule(User $user, MaintenanceSchedule $schedule): bool
     {
-        if ($user->hasAnyRole(['super-admin', 'Admin'])) {
+        if ($user->hasAnyRole(['super-admin', 'admin'])) {
             return true;
         }
 
