@@ -2,50 +2,55 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ScanQRRequest;
 use App\Models\StoreQR;
-use App\Models\QRScanHistory;
+use App\Services\QRScanService;
+use App\Traits\ApiResponseTrait;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class QRScanController extends Controller
 {
-    public function scan(Request $request)
+    use AuthorizesRequests, ApiResponseTrait;
+
+    public function __construct(private readonly QRScanService $qrScanService) {}
+
+    /**
+     * Scan a Store QR code.
+     * QRScanService uses SELECT FOR UPDATE to prevent concurrent duplicate scan entries.
+     * N+1 is resolved: store is eager-loaded inside QRScanService::scan().
+     */
+    public function scan(ScanQRRequest $request): JsonResponse
     {
-        $request->validate([
-            'qr_code' => 'required|string|exists:store_qrs,qr_code'
-        ]);
+        try {
+            $result = $this->qrScanService->scan(
+                $request->validated('qr_code'),
+                $request->user()->id,
+                $request->validated('notes')
+            );
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return $this->notFound('QR code not found or inactive');
+        } catch (\Throwable $e) {
+            return $this->error('Scan failed. Please try again.', 500);
+        }
 
-        $qr = StoreQR::where('qr_code', $request->qr_code)
-            ->where('status', 'active')
-            ->firstOrFail();
-
-        // Record scan history
-        $scan = QRScanHistory::create([
-            'store_qr_id' => $qr->id,
-            'user_id' => auth()->id(),
-            'scanned_at' => now(),
-            'notes' => $request->notes
-        ]);
-
-        return response()->json([
-            'message' => 'QR Code berhasil discan',
-            'data' => [
-                'store' => $qr->store,
-                'scan' => $scan
-            ]
-        ]);
+        return $this->success([
+            'store' => $result['store'],
+            'scan'  => $result['scan'],
+        ], 'QR Code scanned successfully');
     }
 
-    public function history(StoreQR $qr)
+    /**
+     * Get scan history for a given StoreQR.
+     */
+    public function history(Request $request, StoreQR $storeQR): JsonResponse
     {
-        $this->authorize('view', $qr);
+        $this->authorize('view', $storeQR);
 
-        $scans = $qr->scanHistories()
-            ->with('scanner')
-            ->latest()
-            ->paginate(10);
+        $history = $this->qrScanService->history($storeQR, (int) $request->query('per_page', 10));
 
-        return response()->json([
-            'data' => $scans
-        ]);
+        return $this->success($history);
     }
-} 
+}

@@ -173,7 +173,8 @@ class MaintenanceScheduleTest extends TestCase
 
     public function test_technician_cannot_view_unassigned_maintenance_schedule_detail()
     {
-        $otherTechnician = User::factory()->create(['role_id' => 3]);
+        $otherTechnician = User::factory()->create();
+        $otherTechnician->assignRole('technician');
         $schedule = MaintenanceSchedule::create([
             'store_id' => $this->store->id,
             'user_id' => $otherTechnician->id,

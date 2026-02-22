@@ -2,132 +2,97 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Store;
-use App\Models\FilterQR;
+use App\Http\Requests\StoreMaintenanceReportRequest;
 use App\Models\MaintenanceReport;
-use App\Models\StoreQR;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Inertia\Inertia;
+use App\Models\Store;
+use App\Services\MaintenanceService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Redirect;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class MaintenanceController extends Controller
 {
     use AuthorizesRequests;
 
-    public function scanQR($qrCode)
-    {
-        $storeQR = StoreQR::where('qr_code', $qrCode)->firstOrFail();
-        $store = $storeQR->store;
-        
-        return Inertia::render('maintenance/report-form', [
-            'store' => $store
-        ]);
-    }
-    
-    public function submitReport(Request $request, Store $store)
-    {
-        $this->authorize('create', MaintenanceReport::class);
-        
-        $validated = $request->validate([
-            'checklist_items' => 'required|array',
-            'filter_condition_notes' => 'nullable|string',
-            'photo' => 'nullable|image|max:2048'
-        ]);
-        
-        $photoPath = null;
-        if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('maintenance-photos', 'public');
-        }
-        
-        $report = MaintenanceReport::create([
-            'store_id' => $store->id,
-            'technician_id' => auth()->id(),
-            'checklist_items' => $validated['checklist_items'],
-            'filter_condition_notes' => $validated['filter_condition_notes'],
-            'photo_path' => $photoPath,
-            'status' => 'pending'
-        ]);
-        
-        return redirect()->route('maintenance.reports.index')
-            ->with('message', 'Maintenance report submitted successfully');
-    }
+    public function __construct(private readonly MaintenanceService $maintenanceService) {}
 
-    public function store(Request $request, Store $store = null)
-    {
-        $this->authorize('create', MaintenanceReport::class);
-        
-        $validated = $request->validate([
-            'equipment_status' => 'required|in:good,needs_attention,broken',
-            'filter_changed' => 'required|boolean',
-            'filter_type' => 'nullable|string',
-            'notes' => 'nullable|string',
-            'photos.*' => 'nullable|image|max:2048'
-        ]);
-        
-        $photoPaths = [];
-        if ($request->hasFile('photos')) {
-            foreach ($request->file('photos') as $photo) {
-                $photoPaths[] = $photo->store('maintenance-photos', 'public');
-            }
-        }
-        
-        $report = MaintenanceReport::create([
-            'store_id' => $store ? $store->id : $request->input('store_id'),
-            'technician_id' => auth()->id(),
-            'equipment_status' => $validated['equipment_status'],
-            'filter_changed' => $validated['filter_changed'],
-            'filter_type' => $validated['filter_type'],
-            'notes' => $validated['notes'],
-            'photo_paths' => json_encode($photoPaths),
-            'status' => 'pending'
-        ]);
-        
-        return response()->json([
-            'message' => 'Maintenance report submitted successfully',
-            'report' => $report
-        ]);
-    }
-    
-    public function index()
+    public function index(Request $request): Response
     {
         $this->authorize('viewAny', MaintenanceReport::class);
-        
-        $reports = MaintenanceReport::with(['store', 'technician'])
-            ->latest()
-            ->paginate(10);
-            
-        return Inertia::render('maintenancereport/Index', [
-            'reports' => $reports
+
+        $reports = $this->maintenanceService->index($request->only(['search', 'status', 'store_id']));
+        $stores  = Store::orderBy('name')->get(['id', 'name']);
+
+        return Inertia::render('maintenance/index', [
+            'reports' => $reports,
+            'filters' => (object) $request->only(['search', 'status', 'store_id']),
+            'stores'  => $stores,
         ]);
     }
-    
-    public function approve(MaintenanceReport $report)
+
+    public function create(): Response
     {
-        $this->authorize('update', $report);
-        
-        $report->update([
-            'status' => 'approved',
-            'approved_at' => now()
+        $this->authorize('create', MaintenanceReport::class);
+
+        return Inertia::render('maintenance/create', [
+            'stores' => Store::orderBy('name')->get(['id', 'name']),
         ]);
-        
-        return back()->with('message', 'Report approved successfully');
     }
-    
-    public function requestRevision(Request $request, MaintenanceReport $report)
+
+    public function store(StoreMaintenanceReportRequest $request): RedirectResponse
     {
-        $this->authorize('update', $report);
-        
-        $validated = $request->validate([
-            'admin_notes' => 'required|string'
-        ]);
-        
-        $report->update([
-            'status' => 'revision_needed',
-            'admin_notes' => $validated['admin_notes'],
-            'revision_requested_at' => now()
-        ]);
-        
-        return back()->with('message', 'Revision requested successfully');
+        try {
+            $this->maintenanceService->submitReport(
+                $request->validated(),
+                $request->file('photos') ?? [],
+                $request->user()->id
+            );
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Failed to submit report. Please try again.']);
+        }
+
+        return Redirect::route('maintenance.index')
+            ->with('success', 'Maintenance report submitted successfully.');
     }
-} 
+
+    public function show(MaintenanceReport $maintenanceReport): Response
+    {
+        $this->authorize('view', $maintenanceReport);
+
+        return Inertia::render('maintenance/show', [
+            'report' => $maintenanceReport->load(['store:id,name,address', 'technician:id,name']),
+        ]);
+    }
+
+    public function approve(MaintenanceReport $maintenanceReport): RedirectResponse
+    {
+        $this->authorize('approve', $maintenanceReport);
+
+        $this->maintenanceService->approve($maintenanceReport, request()->user()->id);
+
+        return Redirect::back()->with('success', 'Report approved.');
+    }
+
+    public function requestRevision(MaintenanceReport $maintenanceReport): RedirectResponse
+    {
+        $this->authorize('approve', $maintenanceReport);
+
+        $notes = request()->validate(['notes' => 'nullable|string|max:5000'])['notes'] ?? null;
+        $this->maintenanceService->requestRevision($maintenanceReport, request()->user()->id, $notes);
+
+        return Redirect::back()->with('success', 'Revision requested.');
+    }
+
+    public function destroy(MaintenanceReport $maintenanceReport): RedirectResponse
+    {
+        $this->authorize('delete', $maintenanceReport);
+        $this->maintenanceService->destroy($maintenanceReport);
+
+        return Redirect::route('maintenance.index')
+            ->with('success', 'Report deleted successfully.');
+    }
+}
