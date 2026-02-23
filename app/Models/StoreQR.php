@@ -11,6 +11,8 @@ class StoreQR extends Model
 {
     use HasFactory;
 
+    protected $table = 'store_qrs';
+
     protected $fillable = [
         'store_id',
         'qr_code',
@@ -35,7 +37,7 @@ class StoreQR extends Model
 
     public function scanHistories(): HasMany
     {
-        return $this->hasMany(QRScanHistory::class);
+        return $this->hasMany(QRScanHistory::class, 'store_qr_id');
     }
 
     public function maintenanceReports(): HasMany

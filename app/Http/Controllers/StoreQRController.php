@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Store;
 use App\Models\StoreQR;
+use App\Traits\ApiResponseTrait;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
@@ -18,6 +21,8 @@ use Inertia\Inertia;
 
 class StoreQRController extends Controller
 {
+    use AuthorizesRequests, ApiResponseTrait;
+
     public function generateQR(Store $store)
     {
         $this->authorize('view', $store);
@@ -90,7 +95,7 @@ class StoreQRController extends Controller
         ]);
     }
     
-    public function storeQRCodes(Store $store)
+    public function storeQRCodes(Store $store): JsonResponse
     {
         $this->authorize('view', $store);
         
@@ -103,8 +108,66 @@ class StoreQRController extends Controller
         ]);
     }
     
-    public function generate(Store $store)
+    public function generate(Store $store): JsonResponse
     {
-        // ... existing code ...
+        $this->authorize('generate', [StoreQR::class, $store]);
+
+        $qrCode  = Str::random(32);
+        $scanUrl = url('/scan/' . $qrCode);
+        $qrPath  = 'qrcodes/' . $qrCode . '.png';
+
+        $qrCodeObj = new QrCode(
+            data: $scanUrl,
+            errorCorrectionLevel: \Endroid\QrCode\ErrorCorrectionLevel::High,
+        );
+
+        $label  = new Label(text: $store->name);
+        $writer = new PngWriter();
+        $result = $writer->write($qrCodeObj, null, $label);
+
+        Storage::put($qrPath, $result->getString());
+
+        $storeQR = StoreQR::create([
+            'store_id'     => $store->id,
+            'qr_code'      => $qrCode,
+            'qr_path'      => $qrPath,
+            'scan_url'     => $scanUrl,
+            'generated_by' => auth()->id(),
+            'status'       => 'active',
+        ]);
+
+        return $this->created($storeQR, 'QR Code generated successfully');
     }
-} 
+
+    public function show(StoreQR $qr): JsonResponse
+    {
+        $this->authorize('view', $qr);
+
+        return $this->success($qr->load('store'));
+    }
+
+    public function download(StoreQR $qr)
+    {
+        $this->authorize('download', $qr);
+
+        if (!Storage::exists($qr->qr_path)) {
+            return $this->notFound('QR code file not found');
+        }
+
+        return Storage::download($qr->qr_path, $qr->qr_code . '.png');
+    }
+
+    public function toggleStatus(StoreQR $qr): JsonResponse
+    {
+        $this->authorize('update', $qr);
+
+        if ($qr->status === 'active') {
+            $qr->deactivate();
+        } else {
+            $qr->activate();
+        }
+
+        return $this->success($qr->fresh(), 'QR code status updated');
+    }
+}
+ 

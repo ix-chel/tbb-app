@@ -10,6 +10,8 @@ class QRScanHistory extends Model
 {
     use HasFactory;
 
+    protected $table = 'qr_scan_histories';
+
     protected $fillable = [
         'store_qr_id',
         'user_id',
@@ -23,7 +25,7 @@ class QRScanHistory extends Model
 
     public function storeQR()
     {
-        return $this->belongsTo(StoreQR::class);
+        return $this->belongsTo(StoreQR::class, 'store_qr_id');
     }
 
     public function scanner()
