@@ -45,11 +45,11 @@ class QRScanController extends Controller
     /**
      * Get scan history for a given StoreQR.
      */
-    public function history(Request $request, StoreQR $storeQR): JsonResponse
+    public function history(Request $request, StoreQR $qr): JsonResponse
     {
-        $this->authorize('view', $storeQR);
+        $this->authorize('view', $qr);
 
-        $history = $this->qrScanService->history($storeQR, (int) $request->query('per_page', 10));
+        $history = $this->qrScanService->history($qr, (int) $request->query('per_page', 10));
 
         return $this->success($history);
     }

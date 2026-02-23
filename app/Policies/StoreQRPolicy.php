@@ -11,26 +11,26 @@ class StoreQRPolicy
 {
     use HandlesAuthorization;
 
+    public function before(User $user, string $ability): bool|null
+    {
+        if ($user->hasRole('super-admin')) {
+            return true;
+        }
+        return null;
+    }
+
     public function viewAny(User $user)
     {
-        return $user->hasRole(['super_admin', 'admin']);
+        return $user->hasRole(['super-admin', 'admin']);
     }
 
     public function view(User $user, StoreQR $qr)
     {
-        if ($user->hasRole('super_admin')) {
-            return true;
-        }
-
         return $user->hasRole('admin') && $user->company_id === $qr->store->company_id;
     }
 
     public function generate(User $user, Store $store)
     {
-        if ($user->hasRole('super_admin')) {
-            return true;
-        }
-
         return $user->hasRole('admin') && 
             $user->company_id === $store->company_id && 
             $store->status === 'verified';
@@ -38,19 +38,12 @@ class StoreQRPolicy
 
     public function download(User $user, StoreQR $qr)
     {
-        if ($user->hasRole('super_admin')) {
-            return true;
-        }
-
         return $user->hasRole('admin') && $user->company_id === $qr->store->company_id;
     }
 
     public function update(User $user, StoreQR $qr)
     {
-        if ($user->hasRole('super_admin')) {
-            return true;
-        }
-
         return $user->hasRole('admin') && $user->company_id === $qr->store->company_id;
     }
-} 
+}
+ 
