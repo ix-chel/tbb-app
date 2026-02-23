@@ -1,0 +1,336 @@
+
+   PASS  Tests\Unit\ExampleTest
+  Γ£ô that true is true                                                                                                             0.31s  
+
+   PASS  Tests\Feature\Auth\AuthenticationTest
+  Γ£ô login screen can be rendered                                                                                                  0.08s  
+  Γ£ô users can authenticate using the login screen                                                                                 0.05s  
+  Γ£ô users can not authenticate with invalid password                                                                              0.23s  
+  Γ£ô users can logout                                                                                                              0.02s  
+
+   PASS  Tests\Feature\Auth\EmailVerificationTest
+  Γ£ô email verification screen can be rendered                                                                                     0.02s  
+  Γ£ô email can be verified                                                                                                         0.02s  
+  Γ£ô email is not verified with invalid hash                                                                                       0.02s  
+
+   PASS  Tests\Feature\Auth\PasswordConfirmationTest
+  Γ£ô confirm password screen can be rendered                                                                                       0.02s  
+  Γ£ô password can be confirmed                                                                                                     0.02s  
+  Γ£ô password is not confirmed with invalid password                                                                               0.23s  
+
+   PASS  Tests\Feature\Auth\PasswordResetTest
+  Γ£ô reset password link screen can be rendered                                                                                    0.02s  
+  Γ£ô reset password link can be requested                                                                                          0.22s  
+  Γ£ô reset password screen can be rendered                                                                                         0.23s  
+  Γ£ô password can be reset with valid token                                                                                        0.23s  
+
+   PASS  Tests\Feature\Auth\RegistrationTest
+  Γ£ô registration screen can be rendered                                                                                           0.02s  
+  Γ£ô new users can register                                                                                                        0.08s  
+
+   PASS  Tests\Feature\CompanyTest
+  Γ£ô super admin can view companies                                                                                                0.05s  
+  Γ£ô admin can view companies                                                                                                      0.05s  
+  Γ£ô client cannot view companies                                                                                                  0.04s  
+  Γ£ô super admin can create company                                                                                                0.05s  
+  Γ£ô admin can create company                                                                                                      0.05s  
+  Γ£ô client cannot create company                                                                                                  0.05s  
+  Γ£ô super admin can update company                                                                                                0.05s  
+  Γ£ô admin can update company                                                                                                      0.05s  
+  Γ£ô client cannot update company                                                                                                  0.04s  
+  Γ£ô only super admin can delete company                                                                                           0.05s  
+  Γ£ô client cannot delete company                                                                                                  0.05s  
+
+   FAIL  Tests\Feature\DashboardTest
+  Γ£ô guests are redirected to the login page                                                                                       0.04s  
+  Γ£ô super admin can access dashboard                                                                                              0.05s  
+  Γ£ô admin can access dashboard                                                                                                    0.05s  
+  Γ£ô technician can access dashboard                                                                                               0.05s  
+  Γ£ô client can access dashboard                                                                                                   0.04s  
+  Γ¿» menu items are filtered based on permissions                                                                                  0.07s  
+
+   FAIL  Tests\Feature\FeedbackTest
+  Γ¿» authenticated user can view feedback form
+  Γ¿» authenticated user can submit feedback
+  Γ¿» guest cannot access feedback
+
+   FAIL  Tests\Feature\InventoryItemTest
+  Γ£ô super admin can view inventory index                                                                                          0.04s  
+  Γ£ô admin can view inventory index                                                                                                0.04s  
+  Γ£ô technician can view inventory index                                                                                           0.05s  
+  Γ£ô client cannot view inventory index                                                                                            0.05s  
+  Γ£ô admin can view create inventory form                                                                                          0.05s  
+  Γ£ô technician can view create inventory form                                                                                     0.05s  
+  Γ£ô client cannot view create inventory form                                                                                      0.04s  
+  Γ¿» admin can store inventory item                                                                                                0.05s  
+  Γ¿» technician can store inventory item                                                                                           0.05s  
+  Γ£ô store inventory item validation fails                                                                                         0.05s  
+  Γ£ô client cannot store inventory item                                                                                            0.04s  
+  Γ¿» admin can view edit inventory form                                                                                            0.05s  
+  Γ¿» admin can update inventory item                                                                                               0.05s  
+  Γ¿» technician can update inventory item                                                                                          0.05s  
+  Γ£ô client cannot update inventory item                                                                                           0.05s  
+  Γ£ô admin can delete inventory item                                                                                               0.05s  
+  Γ£ô technician cannot delete inventory item                                                                                       0.05s  
+  Γ£ô client cannot delete inventory item                                                                                           0.04s  
+  Γ£ô low stock items are visible                                                                                                   0.05s  
+  Γ£ô out of stock items are visible                                                                                                0.05s  
+
+   PASS  Tests\Feature\MaintenanceScheduleTest
+  Γ£ô super admin can view maintenance schedules index                                                                              0.06s  
+  Γ£ô admin can view maintenance schedules index                                                                                    0.05s  
+  Γ£ô technician cannot view maintenance schedules index                                                                            0.05s  
+  Γ£ô client cannot view maintenance schedules index                                                                                0.04s  
+  Γ£ô admin can create maintenance schedule                                                                                         0.05s  
+  Γ£ô super admin can create maintenance schedule                                                                                   0.05s  
+  Γ£ô technician cannot create maintenance schedule                                                                                 0.05s  
+  Γ£ô client cannot create maintenance schedule                                                                                     0.04s  
+  Γ£ô admin can store maintenance schedule                                                                                          0.05s  
+  Γ£ô store maintenance schedule validasi gagal                                                                                     0.05s  
+  Γ£ô technician cannot store maintenance schedule                                                                                  0.05s  
+  Γ£ô client cannot store maintenance schedule                                                                                      0.04s  
+  Γ£ô admin can view maintenance schedule detail                                                                                    0.05s  
+  Γ£ô technician can view assigned maintenance schedule detail                                                                      0.05s  
+  Γ£ô technician cannot view unassigned maintenance schedule detail                                                                 0.05s  
+  Γ£ô client can view own company maintenance schedule detail                                                                       0.05s  
+  Γ£ô client cannot view other company maintenance schedule detail                                                                  0.05s  
+  Γ£ô admin can edit maintenance schedule                                                                                           0.05s  
+  Γ£ô technician cannot edit maintenance schedule                                                                                   0.05s  
+  Γ£ô admin can update maintenance schedule                                                                                         0.05s  
+  Γ£ô update maintenance schedule validasi gagal                                                                                    0.05s  
+  Γ£ô technician cannot update maintenance schedule                                                                                 0.05s  
+  Γ£ô admin can delete maintenance schedule                                                                                         0.05s  
+  Γ£ô technician cannot delete maintenance schedule                                                                                 0.05s  
+  Γ£ô client cannot delete maintenance schedule                                                                                     0.04s  
+
+   PASS  Tests\Feature\Settings\PasswordUpdateTest
+  Γ£ô password can be updated                                                                                                       0.03s  
+  Γ£ô correct password must be provided to update password                                                                          0.02s  
+
+   PASS  Tests\Feature\Settings\ProfileUpdateTest
+  Γ£ô profile page is displayed                                                                                                     0.02s  
+  Γ£ô profile information can be updated                                                                                            0.02s  
+  Γ£ô email verification status is unchanged when the email address is unchanged                                                    0.02s  
+  Γ£ô user can delete their account                                                                                                 0.02s  
+  Γ£ô correct password must be provided to delete account                                                                           0.02s  
+
+   PASS  Tests\Feature\StoreTest
+  Γ£ô super admin can view stores index                                                                                             0.05s  
+  Γ£ô admin can view stores index                                                                                                   0.05s  
+  Γ£ô technician cannot view stores index                                                                                           0.05s  
+  Γ£ô client cannot view stores index                                                                                               0.04s  
+  Γ£ô admin can create store                                                                                                        0.05s  
+  Γ£ô super admin can create store                                                                                                  0.05s  
+  Γ£ô technician cannot create store                                                                                                0.04s  
+  Γ£ô client cannot create store                                                                                                    0.04s  
+  Γ£ô admin can store store                                                                                                         0.05s  
+  Γ£ô store store validasi gagal                                                                                                    0.06s  
+  Γ£ô technician cannot store store                                                                                                 0.05s  
+  Γ£ô client cannot store store                                                                                                     0.04s  
+  Γ£ô admin can view store detail                                                                                                   0.05s  
+  Γ£ô technician can view store detail                                                                                              0.05s  
+  Γ£ô client can view own store detail                                                                                              0.05s  
+  Γ£ô client cannot view other company store detail                                                                                 0.05s  
+  Γ£ô admin can edit store                                                                                                          0.05s  
+  Γ£ô technician cannot edit store                                                                                                  0.04s  
+  Γ£ô admin can update store                                                                                                        0.05s  
+  Γ£ô update store validasi gagal                                                                                                   0.05s  
+  Γ£ô technician cannot update store                                                                                                0.04s  
+  Γ£ô admin can delete store                                                                                                        0.05s  
+  Γ£ô technician cannot delete store                                                                                                0.05s  
+  Γ£ô client cannot delete store                                                                                                    0.04s  
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ  
+   FAILED  Tests\Feature\DashboardTest > menu items are filtered based on permissions                                                    
+  Property [menus] does not have the expected size.
+Failed asserting that actual size 4 matches expected size 3.
+
+  at tests\Feature\DashboardTest.php:128
+    124Γûò         $this->actingAs($technician)
+    125Γûò             ->get('/dashboard')
+    126Γûò             ->assertOk()
+    127Γûò             ->assertInertia(fn ($page) => $page
+  Γ₧£ 128Γûò                 ->has('menus', 3)
+    129Γûò             );
+    130Γûò 
+    131Γûò         // Client should see very limited menu items (3: Dashboard, Maintenance, Feedback)
+    132Γûò         $this->actingAs($client)
+
+  1   vendor\inertiajs\inertia-laravel\src\Testing\TestResponseMacros.php:26
+  2   vendor\laravel\framework\src\Illuminate\Macroable\Traits\Macroable.php:126
+
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ  
+   FAILED  Tests\Feature\FeedbackTest > authenticated user can view feedback form                                   ArgumentCountError   
+  Too few arguments to function App\Models\User::scopeRole(), 1 passed in C:\Users\USER\tbb-app\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php on line 1757 and at least 2 expected
+
+  at vendor\spatie\laravel-permission\src\Traits\HasRoles.php:79
+     75Γûò      * @param  string|int|array|Role|Collection|\BackedEnum  $roles
+     76Γûò      * @param  string  $guard
+     77Γûò      * @param  bool  $without
+     78Γûò      */
+  Γ₧£  79Γûò     public function scopeRole(Builder $query, $roles, $guard = null, $without = false): Builder
+     80Γûò     {
+     81Γûò         if ($roles instanceof Collection) {
+     82Γûò             $roles = $roles->all();
+     83Γûò         }
+
+  1   vendor\spatie\laravel-permission\src\Traits\HasRoles.php:79
+  2   vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1757
+
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ  
+   FAILED  Tests\Feature\FeedbackTest > authenticated user can submit feedback                                      ArgumentCountError   
+  Too few arguments to function App\Models\User::scopeRole(), 1 passed in C:\Users\USER\tbb-app\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php on line 1757 and at least 2 expected
+
+  at vendor\spatie\laravel-permission\src\Traits\HasRoles.php:79
+     75Γûò      * @param  string|int|array|Role|Collection|\BackedEnum  $roles
+     76Γûò      * @param  string  $guard
+     77Γûò      * @param  bool  $without
+     78Γûò      */
+  Γ₧£  79Γûò     public function scopeRole(Builder $query, $roles, $guard = null, $without = false): Builder
+     80Γûò     {
+     81Γûò         if ($roles instanceof Collection) {
+     82Γûò             $roles = $roles->all();
+     83Γûò         }
+
+  1   vendor\spatie\laravel-permission\src\Traits\HasRoles.php:79
+  2   vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1757
+
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ  
+   FAILED  Tests\Feature\FeedbackTest > guest cannot access feedback                                                ArgumentCountError   
+  Too few arguments to function App\Models\User::scopeRole(), 1 passed in C:\Users\USER\tbb-app\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php on line 1757 and at least 2 expected
+
+  at vendor\spatie\laravel-permission\src\Traits\HasRoles.php:79
+     75Γûò      * @param  string|int|array|Role|Collection|\BackedEnum  $roles
+     76Γûò      * @param  string  $guard
+     77Γûò      * @param  bool  $without
+     78Γûò      */
+  Γ₧£  79Γûò     public function scopeRole(Builder $query, $roles, $guard = null, $without = false): Builder
+     80Γûò     {
+     81Γûò         if ($roles instanceof Collection) {
+     82Γûò             $roles = $roles->all();
+     83Γûò         }
+
+  1   vendor\spatie\laravel-permission\src\Traits\HasRoles.php:79
+  2   vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1757
+
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ  
+   FAILED  Tests\Feature\InventoryItemTest > admin can store inventory item                                                              
+  Failed asserting that two strings are equal.
+
+The following errors occurred during the last request:
+
+The type field is required.
+
+--- Expected
++++ Actual
+@@ @@
+-'http://localhost/inventory'
++'http://localhost'
+
+  at tests\Feature\InventoryItemTest.php:98
+     94Γûò         $itemData = InventoryItem::factory()->type('CF')->make(['store_id' => $store->id])->toArray();
+     95Γûò         $response = $this->actingAs($this->admin)
+     96Γûò                          ->post(route('inventory.store'), $itemData);
+     97Γûò 
+  Γ₧£  98Γûò         $response->assertRedirect(route('inventory.index'));
+     99Γûò         $response->assertSessionHas('message', 'inventory item created.');
+    100Γûò         $this->assertDatabaseHas('inventory_items', [
+    101Γûò             'name' => 'Carbon Filter',
+    102Γûò             'sku' => $itemData['sku'],
+
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ  
+   FAILED  Tests\Feature\InventoryItemTest > technician can store inventory item                                                         
+  Failed asserting that two strings are equal.
+
+The following errors occurred during the last request:
+
+The type field is required.
+
+--- Expected
++++ Actual
+@@ @@
+-'http://localhost/inventory'
++'http://localhost'
+
+  at tests\Feature\InventoryItemTest.php:115
+    111Γûò         $itemData = InventoryItem::factory()->type('UV')->make(['store_id' => $store->id])->toArray();
+    112Γûò         $response = $this->actingAs($this->technician)
+    113Γûò                          ->post(route('inventory.store'), $itemData);
+    114Γûò 
+  Γ₧£ 115Γûò         $response->assertRedirect(route('inventory.index'));
+    116Γûò         $response->assertSessionHas('message', 'inventory item created.');
+    117Γûò         $this->assertDatabaseHas('inventory_items', [
+    118Γûò             'name' => 'UV Purification',
+    119Γûò             'sku' => $itemData['sku'],
+
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ  
+   FAILED  Tests\Feature\InventoryItemTest > admin can view edit inventory form                                              TypeError   
+  PHPUnit\Framework\Assert::assertCount(): Argument #2 ($haystack) must be of type Countable|Traversable|array, int given, called in C:\Users\USER\tbb-app\vendor\laravel\framework\src\Illuminate\Testing\Fluent\Concerns\Has.php on line 34
+
+  at tests\Feature\InventoryItemTest.php:151
+    147Γûò         $response = $this->actingAs($this->admin)->get(route('inventory.edit', $item));
+    148Γûò         $response->assertStatus(200);
+    149Γûò         $response->assertInertia(fn (Assert $page) =>
+    150Γûò             $page->component('inventory/edit')
+  Γ₧£ 151Γûò                  ->has('inventoryItem.id', $item->id)
+    152Γûò         );
+    153Γûò     }
+    154Γûò 
+    155Γûò     public function test_admin_can_update_inventory_item(): void
+
+  1   vendor\inertiajs\inertia-laravel\src\Testing\TestResponseMacros.php:26
+  2   vendor\laravel\framework\src\Illuminate\Macroable\Traits\Macroable.php:126
+
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ  
+   FAILED  Tests\Feature\InventoryItemTest > admin can update inventory item                                                             
+  Failed asserting that two strings are equal.
+
+The following errors occurred during the last request:
+
+The type field is required.
+
+--- Expected
++++ Actual
+@@ @@
+-'http://localhost/inventory'
++'http://localhost'
+
+  at tests\Feature\InventoryItemTest.php:171
+    167Γûò 
+    168Γûò         $response = $this->actingAs($this->admin)
+    169Γûò                          ->put(route('inventory.update', $item), $updateData);
+    170Γûò 
+  Γ₧£ 171Γûò         $response->assertRedirect(route('inventory.index'));
+    172Γûò         $response->assertSessionHas('message', 'inventory item updated.');
+    173Γûò         $this->assertDatabaseHas('inventory_items', [
+    174Γûò             'id' => $item->id,
+    175Γûò             'name' => 'UV Purification Pro',
+
+  ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ  
+   FAILED  Tests\Feature\InventoryItemTest > technician can update inventory item                                                        
+  Failed asserting that two strings are equal.
+
+The following errors occurred during the last request:
+
+The type field is required.
+
+--- Expected
++++ Actual
+@@ @@
+-'http://localhost/inventory'
++'http://localhost'
+
+  at tests\Feature\InventoryItemTest.php:197
+    193Γûò 
+    194Γûò         $response = $this->actingAs($this->technician)
+    195Γûò                          ->put(route('inventory.update', $item), $updateData);
+    196Γûò 
+  Γ₧£ 197Γûò         $response->assertRedirect(route('inventory.index'));
+    198Γûò         $response->assertSessionHas('message', 'inventory item updated.');
+    199Γûò         $this->assertDatabaseHas('inventory_items', [
+    200Γûò             'id' => $item->id,
+    201Γûò             'quantity' => 10,
+
+
+  Tests:    9 failed, 104 passed (489 assertions)
+  Duration: 6.34s
+

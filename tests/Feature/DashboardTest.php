@@ -120,12 +120,12 @@ class DashboardTest extends TestCase
                 ->has('menus', 4)
             );
 
-        // Technician should see limited menu items (4: Dashboard, Stores, Maintenance, Feedback)
+        // Technician should see limited menu items (4: Dashboard, Stores, Inventory, Feedback)
         $this->actingAs($technician)
             ->get('/dashboard')
             ->assertOk()
             ->assertInertia(fn ($page) => $page
-                ->has('menus', 3)
+                ->has('menus', 4)
             );
 
         // Client should see very limited menu items (3: Dashboard, Maintenance, Feedback)

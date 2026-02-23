@@ -148,7 +148,7 @@ class InventoryItemTest extends TestCase
         $response->assertStatus(200);
         $response->assertInertia(fn (Assert $page) =>
             $page->component('inventory/edit')
-                 ->has('inventoryItem.id', $item->id)
+                 ->where('inventoryItem.id', $item->id)
         );
     }
 

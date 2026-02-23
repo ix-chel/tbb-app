@@ -41,8 +41,9 @@ class InventoryItemFactory extends Factory
     {
         return [
             'name' => 'Generic Filter',
+            'type' => 'filter',
             'sku' => 'XX-' . $this->faker->unique()->numberBetween(1000, 9999),
-            'quantity' => $this->faker->numberBetween(0, 100),
+            'quantity' => $this->faker->numberBetween(15, 100),
             'unit' => 'pcs',
             'location' => $this->faker->city,
             'description' => $this->faker->sentence,
@@ -90,13 +91,13 @@ class InventoryItemFactory extends Factory
     public function type(string $type): self
     {
         $types = [
-            'CF' => ['name' => 'Carbon Filter', 'sku' => 'CF-' . $this->faker->unique()->numberBetween(1000, 9999)],
-            'UV' => ['name' => 'UV Purification', 'sku' => 'UV-' . $this->faker->unique()->numberBetween(1000, 9999)],
-            'RO' => ['name' => 'Reverse Osmosis', 'sku' => 'RO-' . $this->faker->unique()->numberBetween(1000, 9999)],
-            'PP' => ['name' => 'PP Filter', 'sku' => 'PP-' . $this->faker->unique()->numberBetween(1000, 9999)],
-            'CT' => ['name' => 'Cartridge', 'sku' => 'CT-' . $this->faker->unique()->numberBetween(1000, 9999)],
-            'PS' => ['name' => 'Pressure Switch', 'sku' => 'PS-' . $this->faker->unique()->numberBetween(1000, 9999)],
-            'PM' => ['name' => 'Pressure Meter', 'sku' => 'PM-' . $this->faker->unique()->numberBetween(1000, 9999)],
+            'CF' => ['name' => 'Carbon Filter',     'sku' => 'CF-' . $this->faker->unique()->numberBetween(1000, 9999), 'type' => 'filter'],
+            'UV' => ['name' => 'UV Purification',   'sku' => 'UV-' . $this->faker->unique()->numberBetween(1000, 9999), 'type' => 'mesin'],
+            'RO' => ['name' => 'Reverse Osmosis',   'sku' => 'RO-' . $this->faker->unique()->numberBetween(1000, 9999), 'type' => 'mesin'],
+            'PP' => ['name' => 'PP Filter',         'sku' => 'PP-' . $this->faker->unique()->numberBetween(1000, 9999), 'type' => 'filter'],
+            'CT' => ['name' => 'Cartridge',         'sku' => 'CT-' . $this->faker->unique()->numberBetween(1000, 9999), 'type' => 'sparepart'],
+            'PS' => ['name' => 'Pressure Switch',   'sku' => 'PS-' . $this->faker->unique()->numberBetween(1000, 9999), 'type' => 'alat'],
+            'PM' => ['name' => 'Pressure Meter',    'sku' => 'PM-' . $this->faker->unique()->numberBetween(1000, 9999), 'type' => 'alat'],
         ];
 
         return $this->state(function (array $attributes) use ($type, $types) {

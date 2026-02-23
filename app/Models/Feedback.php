@@ -13,9 +13,10 @@ class Feedback extends Model
     protected $fillable = [
         'user_id',
         'store_id',
-        'title',
-        'message',
+        'maintenance_schedule_id',
         'type',
+        'rating',
+        'comment',
         'status',
         'admin_response',
         'responded_at'

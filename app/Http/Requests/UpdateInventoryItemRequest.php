@@ -18,7 +18,7 @@ class UpdateInventoryItemRequest extends FormRequest
 
         return [
             'name'                => 'required|string|max:255',
-            'type'                => 'required|string|in:filter,mesin,alat,sparepart',
+            'type'                => 'sometimes|required|string|in:filter,mesin,alat,sparepart',
             'sku'                 => ['required', 'string', 'max:255', Rule::unique('inventory_items')->ignore($item->id)],
             'quantity'            => 'required|integer|min:0',
             'unit'                => 'required|string|max:50',

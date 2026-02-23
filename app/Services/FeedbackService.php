@@ -31,7 +31,7 @@ class FeedbackService
     {
         $feedback = Feedback::create(array_merge($data, [
             'user_id' => $userId,
-            'status'  => 'new',
+            'status'  => 'pending',
         ]));
 
         $this->logActivity('feedback.submitted', [

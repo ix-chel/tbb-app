@@ -22,7 +22,6 @@ class FeedbackTest extends TestCase
         
         $this->user = User::factory()->create();
         $this->user->assignRole('client');
-        $this->user->load('role');
     }
 
     public function test_authenticated_user_can_view_feedback_form()
@@ -35,22 +34,23 @@ class FeedbackTest extends TestCase
 
     public function test_authenticated_user_can_submit_feedback()
     {
+        $store = \App\Models\Store::factory()->create();
         $feedbackData = [
-            'title' => 'Test Feedback',
-            'content' => 'This is a test feedback',
-            'rating' => 5
+            'store_id' => $store->id,
+            'type'    => 'suggestion',
+            'comment' => 'This is a test feedback comment',
         ];
 
         $this->actingAs($this->user)
             ->post(route('feedback.store'), $feedbackData)
-            ->assertRedirect()
-            ->assertSessionHas('message');
+            ->assertRedirect(route('dashboard'))
+            ->assertSessionHas('success');
 
         $this->assertDatabaseHas('feedback', [
-            'title' => 'Test Feedback',
-            'content' => 'This is a test feedback',
-            'rating' => 5,
-            'user_id' => $this->user->id
+            'store_id'  => $store->id,
+            'type'      => 'suggestion',
+            'comment'   => 'This is a test feedback comment',
+            'user_id'   => $this->user->id,
         ]);
     }
 

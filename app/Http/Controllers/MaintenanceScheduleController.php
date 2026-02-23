@@ -26,7 +26,7 @@ class MaintenanceScheduleController extends Controller
         $query = MaintenanceSchedule::with(['store', 'technician']);
 
         // Role-based filter
-        if ($user->hasRole('Client')) {
+        if ($user->hasRole('client')) {
             $query->whereHas('store', fn ($q) => $q->where('company_id', $user->company_id));
         } elseif ($user->hasRole('technician')) {
             $query->where('user_id', $user->id);

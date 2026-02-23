@@ -16,17 +16,18 @@ class InventoryService
         $query = InventoryItem::query()->with('lastUpdater:id,name');
 
         if (!empty($filters['search'])) {
-            $query->where('name', 'like', '%' . $filters['search'] . '%')
+            $query->where(function ($q) use ($filters) {
+                $q->where('name', 'like', '%' . $filters['search'] . '%')
                   ->orWhere('sku', 'like', '%' . $filters['search'] . '%');
+            });
         }
 
-        if (($filters['show_low_stock'] ?? null) === '1') {
-            $query->whereNotNull('low_stock_threshold')
-                  ->whereColumn('quantity', '<=', 'low_stock_threshold');
+        if (filter_var($filters['show_low_stock'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+            $query->lowStock();
         }
 
-        if (($filters['show_out_of_stock'] ?? null) === '1') {
-            $query->where('quantity', '<=', 0);
+        if (filter_var($filters['show_out_of_stock'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+            $query->outOfStock();
         }
 
         return $query->orderBy('name')->paginate($perPage)->withQueryString();

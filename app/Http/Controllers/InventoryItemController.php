@@ -49,32 +49,32 @@ class InventoryItemController extends Controller
             ->with('message', 'inventory item created.');
     }
 
-    public function show(InventoryItem $inventoryItem): RedirectResponse
+    public function show(InventoryItem $inventory): RedirectResponse
     {
-        return Redirect::route('inventory.edit', $inventoryItem->id);
+        return Redirect::route('inventory.edit', $inventory->id);
     }
 
-    public function edit(InventoryItem $inventoryItem): InertiaResponse
+    public function edit(InventoryItem $inventory): InertiaResponse
     {
-        $this->authorize('update', $inventoryItem);
+        $this->authorize('update', $inventory);
 
         return Inertia::render('inventory/edit', [
-            'inventoryItem' => $inventoryItem->load('lastUpdater:id,name'),
+            'inventoryItem' => $inventory->load('lastUpdater:id,name'),
         ]);
     }
 
-    public function update(UpdateInventoryItemRequest $request, InventoryItem $inventoryItem): RedirectResponse
+    public function update(UpdateInventoryItemRequest $request, InventoryItem $inventory): RedirectResponse
     {
-        $this->inventoryService->update($inventoryItem, $request->validated(), $request->user()->id);
+        $this->inventoryService->update($inventory, $request->validated(), $request->user()->id);
 
         return redirect()->route('inventory.index')
             ->with('message', 'inventory item updated.');
     }
 
-    public function destroy(InventoryItem $inventoryItem): RedirectResponse
+    public function destroy(InventoryItem $inventory): RedirectResponse
     {
-        $this->authorize('delete', $inventoryItem);
-        $this->inventoryService->destroy($inventoryItem);
+        $this->authorize('delete', $inventory);
+        $this->inventoryService->destroy($inventory);
 
         return Redirect::route('inventory.index')
             ->with('message', 'inventory item deleted.');
